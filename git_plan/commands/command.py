@@ -1,5 +1,4 @@
-"""
-Base class for Commands
+"""Base class for Commands
 
 @author Rory Byrne <rory@rory.bio>
 """
@@ -8,11 +7,11 @@ from abc import ABC, abstractmethod
 
 class Command(ABC):
 
-    @classmethod
-    def run(cls):
-        command = cls()
-        command.pre_command()
-        command.command()
+    subcommand: str = None
+
+    def run(self):
+        self.pre_command()
+        self.command()
 
     @abstractmethod
     def pre_command(self):

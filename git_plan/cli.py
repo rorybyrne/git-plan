@@ -1,21 +1,29 @@
-import argparse
+"""CLI Entrypoint
 
-from git_plan.commands.kill import Kill
-from git_plan.commands.plan import Plan
+@author Rory Byrne <rory@rory.bio>
+"""
+from typing import List, Dict
 
-
-def parse_args():
-    args_parser = argparse.ArgumentParser(prog='git-plan', description='A better workflow for git.')
-    args_parser.add_argument('subcommand', type=str, nargs='?', help='The subcommand to run')
-    return args_parser
+from git_plan.commands.command import Command
+from git_plan.exceptions import CommandNotFound
 
 
-if __name__ == "__main__":
-    parser = parse_args()
-    args = parser.parse_args()
-    if not args.subcommand:
-        Plan.run()
-    elif args.subcommand == 'kill':
-        Kill.run()
-    else:
-        parser.print_help()
+class CLI:
+    """The command-line entrypoint"""
+
+    def __init__(self, commands: List[Command]):
+        assert not any([c.subcommand is None for c in commands]), "Command missing subcommand attribute"
+
+        self._commands: Dict[str, Command] = {c.subcommand: c for c in commands}
+
+    def get_command(self, subcommand: str) -> Command:
+        """Return the requested command as a singleton"""
+        if not subcommand:
+            subcommand = 'plan'
+
+        command = self._commands.get(subcommand)
+
+        if not command:
+            raise CommandNotFound()
+
+        return command
