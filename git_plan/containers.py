@@ -7,6 +7,7 @@ from pathlib import Path
 from dependency_injector import providers, containers
 
 from git_plan.cli.cli import CLI
+from git_plan.cli.commands.add import Add
 from git_plan.cli.commands.plan import Plan
 from git_plan.oracle.oracle import Oracle
 from git_plan.service.observer import ObserverService
@@ -37,6 +38,7 @@ class Commands(containers.DeclarativeContainer):
     services = providers.DependenciesContainer()
 
     plan_command = providers.Singleton(Plan, plan_service=services.plan_service, working_dir=config.project.working_dir)
+    add_command = providers.Singleton(Add, plan_service=services.plan_service, working_dir=config.project.working_dir)
 
 
 class Application(containers.DeclarativeContainer):
@@ -63,7 +65,8 @@ class Application(containers.DeclarativeContainer):
     cli = providers.Singleton(
         CLI,
         commands=providers.List(
-            commands.plan_command
+            commands.plan_command,
+            commands.add_command
         )
     )
 
