@@ -4,7 +4,7 @@
 """
 from typing import List, Dict
 
-from git_plan.commands.command import Command
+from git_plan.cli.commands.command import Command
 from git_plan.exceptions import CommandNotFound
 
 

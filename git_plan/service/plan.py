@@ -2,6 +2,7 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
+import json
 import os
 import tempfile
 from subprocess import call
@@ -9,47 +10,63 @@ from subprocess import call
 
 class PlanService:
 
-    def __init__(self, directory: str):
-        assert directory, "Directory is None"
-        self._directory = directory
-
-    def create_plan(self):
+    def create_plan(self) -> str:
         """Create a plan in the given directory
 
         1. Create a new file in .git/ containing the plan
         """
         plan = self._ask_for_plan()
-        self._write_plan(plan, self._directory)
+
+        return plan
+
+    def save_plan(self, plan: str, directory: str):
+        self._write_plan(plan, directory)
 
     def update_plan(self, new_plan: str, directory: str):
         """Update the plan in the given directory"""
         pass
 
-    def plan_exists(self):
-        """Check if a plan already exists in the given directory"""
-        return os.path.isfile(self._plan_filename)
+    def delete_plan(self, directory: str):
+        pass
 
-    def print_status(self):
+    def plan_exists(self, directory: str):
+        """Check if a plan already exists in the given directory"""
+        return os.path.isfile(self._plan_filename(directory))
+
+    def print_status(self, directory: str):
         """Print the status of the plan"""
-        plan = self._read_plan()
+        plan = self._read_plan(directory)
         if not plan:
             raise RuntimeError("Plan not found?")
 
         print("Plan:")
         print(plan)
 
+    @staticmethod
+    def load_plans(plan_home: str):
+        """Returns a list of directories"""
+        try:
+            plans_file = os.path.join(plan_home, 'plans.json')
+            with open(plans_file) as ph:
+                plan_data = json.load(ph)
+
+            return plan_data['plans']
+        except FileNotFoundError:
+            print("Couldn't find plans file")
+            return []
+
+
     # Private #############
 
-    @property
-    def _plan_home(self):
-        return f'{self._directory}/.git/plan'
+    @staticmethod
+    def local_plan_dir(directory: str):
+        return f'{directory}/.git/plan'
 
-    @property
-    def _plan_filename(self):
-        return f'{self._plan_home}/plan.txt'
+    def _plan_filename(self, directory: str):
+        return f'{self.local_plan_dir(directory)}/plan.txt'
 
-    def _read_plan(self):
-        plan_filename = f'{self._directory}/.git/plan/plan.txt'
+    def _read_plan(self, directory: str):
+        plan_filename = f'{directory}/.git/plan/plan.txt'
         with open(plan_filename, 'r') as f:
             return f.read()
 
@@ -58,9 +75,9 @@ class PlanService:
         if not self._is_git_repository(directory):
             raise RuntimeError("Not a git repository")
 
-        os.makedirs(os.path.dirname(self._plan_filename), exist_ok=True)  # Create plan/ directory if needed
+        os.makedirs(os.path.dirname(self._plan_filename(directory)), exist_ok=True)  # Create plan/ directory if needed
 
-        with open(self._plan_filename, 'w') as f:
+        with open(self._plan_filename(directory), 'w') as f:
             f.write(plan)
 
     @staticmethod
