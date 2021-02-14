@@ -5,48 +5,55 @@
 import json
 import os
 import tempfile
+import time
 from subprocess import call
+from typing import List
+
+from git_plan.model.project import Project
+from git_plan.model.task import Task
 
 
 class PlanService:
 
-    def create_plan(self) -> str:
+    PROJECTS_FILE = 'projects.json'
+    TASK_FILE_TEMPLATE = 'task-{timestamp}'
+
+    def create_task(self, project: Project):
         """Create a plan in the given directory
 
         1. Create a new file in .git/ containing the plan
         """
-        plan = self._ask_for_plan()
+        content = self._plan_task()
+        task_id = str(int(time.time()))
+        task = Task(project, task_id)
+        task.content = content
+        task.save()
 
-        return plan
-
-    def save_plan(self, plan: str, directory: str):
-        self._write_plan(plan, directory)
-
-    def update_plan(self, new_plan: str, directory: str):
+    def update_task(self, task: Task, new_content: str):
         """Update the plan in the given directory"""
         pass
 
-    def delete_plan(self, directory: str):
+    def delete_task(self, task: Task):
         pass
 
-    def plan_exists(self, directory: str):
+    @staticmethod
+    def has_tasks(project: Project) -> bool:
         """Check if a plan already exists in the given directory"""
-        return os.path.isfile(self._plan_filename(directory))
-
-    def print_status(self, directory: str):
-        """Print the status of the plan"""
-        plan = self._read_plan(directory)
-        if not plan:
-            raise RuntimeError("Plan not found?")
-
-        print("Plan:")
-        print(plan)
+        return project.has_tasks()
 
     @staticmethod
-    def load_plans(plan_home: str):
+    def get_tasks(project: Project) -> List[Task]:
+        """Print the status of the plan
+
+        Raises:
+            RuntimeError:   Task file not found
+        """
+        return Task.fetch_tasks(project)
+
+    def load_plans(self, plan_home: str):
         """Returns a list of directories"""
         try:
-            plans_file = os.path.join(plan_home, 'plans.json')
+            plans_file = os.path.join(plan_home, self.PROJECTS_FILE)
             with open(plans_file) as ph:
                 plan_data = json.load(ph)
 
@@ -55,38 +62,14 @@ class PlanService:
             print("Couldn't find plans file")
             return []
 
-
     # Private #############
 
     @staticmethod
-    def local_plan_dir(directory: str):
-        return f'{directory}/.git/plan'
-
-    def _plan_filename(self, directory: str):
-        return f'{self.local_plan_dir(directory)}/plan.txt'
-
-    def _read_plan(self, directory: str):
-        plan_filename = f'{directory}/.git/plan/plan.txt'
-        with open(plan_filename, 'r') as f:
-            return f.read()
-
-    def _write_plan(self, plan: str, directory: str):
-        """Writes/overwrites the plan file"""
-        if not self._is_git_repository(directory):
-            raise RuntimeError("Not a git repository")
-
-        os.makedirs(os.path.dirname(self._plan_filename(directory)), exist_ok=True)  # Create plan/ directory if needed
-
-        with open(self._plan_filename(directory), 'w') as f:
-            f.write(plan)
-
-    @staticmethod
-    def _ask_for_plan():
+    def _plan_task(initial: str = ''):
         editor = os.environ.get('EDITOR', 'vim')
-        initial_message = ''
 
         with tempfile.NamedTemporaryFile(suffix=".tmp", mode='r+') as tf:
-            tf.write(initial_message)
+            tf.write(initial)
             tf.flush()
             call([editor, tf.name])
 
@@ -94,11 +77,3 @@ class PlanService:
             edited_message = tf.read()
 
             return edited_message
-
-    @staticmethod
-    def _is_git_repository(directory: str):
-        """Checks whether a .git/ directory exists
-
-        @todo   move this to utilities so it can be re-used elsewhere
-        """
-        return os.path.isdir(f'{directory}/.git')
