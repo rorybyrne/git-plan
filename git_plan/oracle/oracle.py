@@ -25,7 +25,7 @@ class Oracle:
         self._watches_by_dir: Dict[str, ObservedWatch] = dict()
 
         # Handlers
-        self._plan_handler = PlanEventHandler(self._plan_home, self, self._plan_service)
+        self._plan_handler = PlanEventHandler(self, self._plan_service)
         self._workspace_handler = WorkspaceEventHandler()
 
     def start(self):
@@ -38,7 +38,7 @@ class Oracle:
         self._observer.start()
 
         # Watch the registered workspaces
-        workspaces = self._plan_service.load_plans(self._plan_home)
+        workspaces = self._plan_service.load_plans()
         workspace_handler = WorkspaceEventHandler()
         if len(workspaces) == 0:
             print("No plans!")

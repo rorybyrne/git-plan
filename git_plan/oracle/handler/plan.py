@@ -20,8 +20,7 @@ TimedEvent = Tuple[int, str]
 class PlanEventHandler(FileSystemEventHandler):
     """Handle changes to the plan directory"""
 
-    def __init__(self, plan_home: str, oracle: "Oracle", plan_service: PlanService):
-        self._plan_home = plan_home
+    def __init__(self, oracle: "Oracle", plan_service: PlanService):
         self._oracle = oracle
         self._plan_service = plan_service
 
@@ -32,13 +31,13 @@ class PlanEventHandler(FileSystemEventHandler):
         if self._should_handle(event):
             print('\tPLAN CREATED')
             print(event)
-            plan_dirs = self._plan_service.load_plans(self._plan_home)
+            plan_dirs = self._plan_service.load_plans()
             self._oracle.reconcile(plan_dirs)
 
     def on_modified(self, event: FileSystemEvent):
         """Handles the modification event"""
         if self._should_handle(event):
-            plan_dirs = self._plan_service.load_plans(self._plan_home)
+            plan_dirs = self._plan_service.load_plans()
             self._oracle.reconcile(plan_dirs)
 
     def _should_handle(self, event: FileSystemEvent):
