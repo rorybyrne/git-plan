@@ -1,10 +1,15 @@
+"""CLI entry point
+
+Author: Rory Byrne <rory@rory.bio>
+"""
 import argparse
 import os
 import sys
+from pathlib import Path
 
 from dependency_injector.wiring import inject, Provide
 
-from git_plan.cli import CLI
+from git_plan.cli.cli import CLI
 from git_plan.containers import Application
 from git_plan.exceptions import CommandNotFound
 
@@ -31,14 +36,16 @@ def main(subcommand: str, cli: CLI = Provide[Application.cli]):
 
 
 if __name__ == "__main__":
+    working_dir = os.getcwd()
     parser = parse_args()
     args = parser.parse_args()
 
     app = Application()
-    cwd = os.getcwd()
+    app.config.from_yaml('config.yaml')
+    app.config.override({'plan_home': app.config.plan_home().replace('$HOME', str(Path.home()))})
     app.config.from_dict({
-        'services': {
-            'directory': cwd
+        'commands': {
+            'working_dir': working_dir
         }
     })
     app.wire(modules=[sys.modules[__name__]])  # What is this? Who knows, but it works.
