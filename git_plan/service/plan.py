@@ -2,7 +2,6 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
-import json
 import os
 import tempfile
 import time
@@ -14,12 +13,11 @@ from git_plan.model.task import Task, TaskContent
 
 
 class PlanService:
+    """Manage the user's plans"""
 
-    def __init__(self, plan_home: str, task_template_file: str, projects_file: str):
+    def __init__(self, plan_home: str, task_template_file: str):
         assert task_template_file, "Task template filename missing"
-        assert projects_file, "Projects filename missing"
         self._task_template_file = os.path.join(plan_home, task_template_file)
-        self._projects_file = os.path.join(plan_home, projects_file)
         self._plan_home = plan_home
 
     def create_task(self, project: Project):
@@ -33,9 +31,15 @@ class PlanService:
         task.content = content
         task.save()
 
-    def update_task(self, task: Task, new_content: str):
+    def edit_task(self, task: Task):
         """Update the plan in the given directory"""
-        pass
+        template = self._get_template(self._task_template_file) \
+            .replace('%headline%', task.content.headline) \
+            .replace('%body%', task.content.body)
+
+        new_content = self._plan_task(initial=template)
+        task.content = new_content
+        task.save()
 
     def delete_task(self, task: Task):
         """Delete the chosen task"""
@@ -55,24 +59,14 @@ class PlanService:
         """
         return Task.fetch_tasks(project)
 
-    def load_plans(self):
-        """Returns a list of directories"""
-        try:
-            with open(self._projects_file) as ph:
-                plan_data = json.load(ph)
-
-            return plan_data['plans']
-        except FileNotFoundError:
-            print("Couldn't find plans file")
-            return []
-
     # Private #############
 
     def _plan_task(self, initial: str = None) -> TaskContent:
         editor = os.environ.get('EDITOR', 'vim')
         if not initial:
-            with open(self._task_template_file, 'r') as f:
-                initial = f.read()
+            initial = self._get_template(self._task_template_file) \
+                .replace('%headline%', '') \
+                .replace('%body%', '')
 
         with tempfile.NamedTemporaryFile(suffix=".tmp", mode='r+') as tf:
             tf.write(initial)
@@ -85,7 +79,18 @@ class PlanService:
 
             return TaskContent.from_string(processed_input)
 
-    def _post_process_task(self, lines: List[str]):
+    @staticmethod
+    def _get_template(file: str):
+        try:
+            with open(file, 'r') as f:
+                template = f.read()
+                return template
+        except FileNotFoundError as e:
+            print(e)
+            return ''
+
+    @staticmethod
+    def _post_process_task(lines: List[str]):
         lines = [line.strip() for line in lines if not line.startswith('#') or line == '\n']
         headline = lines[0].strip()
         body = '\n'.join(lines[1:]).strip()
