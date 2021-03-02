@@ -42,12 +42,8 @@ if __name__ == "__main__":
 
     app = Application()
     app.config.from_yaml('config.yaml')
-    app.config.override({'plan_home': app.config.plan_home().replace('$HOME', str(Path.home()))})
-    app.config.from_dict({
-        'commands': {
-            'working_dir': working_dir
-        }
-    })
+    app.config.set('app.plan_home', app.config.app.plan_home().replace('$HOME', str(Path.home())))
+    app.config.set('project.working_dir', working_dir)
     app.wire(modules=[sys.modules[__name__]])  # What is this? Who knows, but it works.
 
     main(args.subcommand)

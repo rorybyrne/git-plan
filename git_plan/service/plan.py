@@ -2,103 +2,97 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
-import json
 import os
 import tempfile
+import time
 from subprocess import call
+from typing import List
+
+from git_plan.model.project import Project
+from git_plan.model.task import Task, TaskContent
 
 
 class PlanService:
+    """Manage the user's plans"""
 
-    def create_plan(self) -> str:
+    def __init__(self, plan_home: str, task_template_file: str):
+        assert task_template_file, "Task template filename missing"
+        self._task_template_file = os.path.join(plan_home, task_template_file)
+        self._plan_home = plan_home
+
+    def create_task(self, project: Project):
         """Create a plan in the given directory
 
         1. Create a new file in .git/ containing the plan
         """
-        plan = self._ask_for_plan()
+        content = self._plan_task()
+        task_id = str(int(time.time()))
+        task = Task(project, task_id)
+        task.content = content
+        task.save()
 
-        return plan
-
-    def save_plan(self, plan: str, directory: str):
-        self._write_plan(plan, directory)
-
-    def update_plan(self, new_plan: str, directory: str):
+    def edit_task(self, task: Task):
         """Update the plan in the given directory"""
+        template = self._get_template(self._task_template_file) \
+            .replace('%headline%', task.content.headline) \
+            .replace('%body%', task.content.body)
+
+        new_content = self._plan_task(initial=template)
+        task.content = new_content
+        task.save()
+
+    def delete_task(self, task: Task):
+        """Delete the chosen task"""
         pass
-
-    def delete_plan(self, directory: str):
-        pass
-
-    def plan_exists(self, directory: str):
-        """Check if a plan already exists in the given directory"""
-        return os.path.isfile(self._plan_filename(directory))
-
-    def print_status(self, directory: str):
-        """Print the status of the plan"""
-        plan = self._read_plan(directory)
-        if not plan:
-            raise RuntimeError("Plan not found?")
-
-        print("Plan:")
-        print(plan)
 
     @staticmethod
-    def load_plans(plan_home: str):
-        """Returns a list of directories"""
-        try:
-            plans_file = os.path.join(plan_home, 'plans.json')
-            with open(plans_file) as ph:
-                plan_data = json.load(ph)
+    def has_tasks(project: Project) -> bool:
+        """Check if a plan already exists in the given directory"""
+        return project.has_tasks()
 
-            return plan_data['plans']
-        except FileNotFoundError:
-            print("Couldn't find plans file")
-            return []
+    @staticmethod
+    def get_tasks(project: Project) -> List[Task]:
+        """Print the status of the plan
 
+        Raises:
+            RuntimeError:   Task file not found
+        """
+        return Task.fetch_tasks(project)
 
     # Private #############
 
-    @staticmethod
-    def local_plan_dir(directory: str):
-        return f'{directory}/.git/plan'
-
-    def _plan_filename(self, directory: str):
-        return f'{self.local_plan_dir(directory)}/plan.txt'
-
-    def _read_plan(self, directory: str):
-        plan_filename = f'{directory}/.git/plan/plan.txt'
-        with open(plan_filename, 'r') as f:
-            return f.read()
-
-    def _write_plan(self, plan: str, directory: str):
-        """Writes/overwrites the plan file"""
-        if not self._is_git_repository(directory):
-            raise RuntimeError("Not a git repository")
-
-        os.makedirs(os.path.dirname(self._plan_filename(directory)), exist_ok=True)  # Create plan/ directory if needed
-
-        with open(self._plan_filename(directory), 'w') as f:
-            f.write(plan)
-
-    @staticmethod
-    def _ask_for_plan():
+    def _plan_task(self, initial: str = None) -> TaskContent:
         editor = os.environ.get('EDITOR', 'vim')
-        initial_message = ''
+        if not initial:
+            initial = self._get_template(self._task_template_file) \
+                .replace('%headline%', '') \
+                .replace('%body%', '')
 
         with tempfile.NamedTemporaryFile(suffix=".tmp", mode='r+') as tf:
-            tf.write(initial_message)
+            tf.write(initial)
             tf.flush()
             call([editor, tf.name])
 
             tf.seek(0)
-            edited_message = tf.read()
+            message_lines = tf.readlines()
+            processed_input = self._post_process_task(message_lines)
 
-            return edited_message
+            return TaskContent.from_string(processed_input)
 
     @staticmethod
-    def _is_git_repository(directory: str):
-        """Checks whether a .git/ directory exists
+    def _get_template(file: str):
+        try:
+            with open(file, 'r') as f:
+                template = f.read()
+                return template
+        except FileNotFoundError as e:
+            print(e)
+            return ''
 
-        @todo   move this to utilities so it can be re-used elsewhere
-        """
-        return os.path.isdir(f'{directory}/.git')
+    @staticmethod
+    def _post_process_task(lines: List[str]):
+        lines = [line.strip() for line in lines if not line.startswith('#') or line == '\n']
+        headline = lines[0].strip()
+        body = '\n'.join(lines[1:]).strip()
+
+        return ''.join([headline, '\n', '\n', body])

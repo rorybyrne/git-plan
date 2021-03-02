@@ -2,15 +2,17 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
-from pathlib import Path
 
 from dependency_injector import providers, containers
 
 from git_plan.cli.cli import CLI
+from git_plan.cli.commands.add import Add
+from git_plan.cli.commands.edit import Edit
 from git_plan.cli.commands.plan import Plan
 from git_plan.oracle.oracle import Oracle
-from git_plan.service.observer import ObserverService
 from git_plan.service.plan import PlanService
+from git_plan.service.project import ProjectService
+from git_plan.service.ui import UIService
 
 
 class Core(containers.DeclarativeContainer):
@@ -22,8 +24,19 @@ class Services(containers.DeclarativeContainer):
     """Dependency structure for services"""
     config = providers.Configuration()
 
-    plan_service = providers.Singleton(PlanService)
-    observer_service = providers.Singleton(ObserverService)
+    plan_service = providers.Singleton(
+        PlanService,
+        plan_home=config.app.plan_home,
+        task_template_file=config.app.task_template_file,
+    )
+    project_service = providers.Singleton(
+        ProjectService,
+        plan_home=config.app.plan_home,
+        projects_file=config.app.projects_file
+    )
+    ui_service = providers.Singleton(
+        UIService
+    )
 
 
 class Commands(containers.DeclarativeContainer):
@@ -31,7 +44,14 @@ class Commands(containers.DeclarativeContainer):
     config = providers.Configuration()
     services = providers.DependenciesContainer()
 
-    plan_command = providers.Singleton(Plan, plan_service=services.plan_service, working_dir=config.working_dir)
+    plan_command = providers.Singleton(Plan, plan_service=services.plan_service, working_dir=config.project.working_dir)
+    add_command = providers.Singleton(Add, plan_service=services.plan_service, working_dir=config.project.working_dir)
+    edit_command = providers.Singleton(
+        Edit,
+        ui_service=services.ui_service,
+        plan_service=services.plan_service,
+        working_dir=config.project.working_dir
+    )
 
 
 class Application(containers.DeclarativeContainer):
@@ -40,17 +60,17 @@ class Application(containers.DeclarativeContainer):
 
     core = providers.Container(
         Core,
-        config=config.core
+        config=config
     )
 
     services = providers.Container(
         Services,
-        config=config.services
+        config=config
     )
 
     commands = providers.Container(
         Commands,
-        config=config.commands,
+        config=config,
         services=services
     )
 
@@ -58,12 +78,14 @@ class Application(containers.DeclarativeContainer):
     cli = providers.Singleton(
         CLI,
         commands=providers.List(
-            commands.plan_command
+            commands.plan_command,
+            commands.add_command,
+            commands.edit_command
         )
     )
 
     oracle = providers.Singleton(
         Oracle,
         plan_service=services.plan_service,
-        plan_home=config.plan_home
+        plan_home=config.app.plan_home
     )

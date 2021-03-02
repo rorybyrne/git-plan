@@ -1,8 +1,8 @@
-########### PLAN SUMMARY ##################################
-
-########### FILES #########################################
-
+########### PLAN SUMMARY (50 chars) #############
+%headline%
+########### DETAILS #################################################
+%body%
 ########### END ###########################################
-# Put a filename on each line
-# We'll let you know if you edit any other files
+# Put your intended commit message on the top
+# Put a more detailed description below
 ###########################################################
