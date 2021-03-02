@@ -30,11 +30,11 @@ class Plan(Command):
         3. Launch an observer to watch the development environment
             3a. When does the observer terminate?
         """
-        if self._plan_service.has_tasks(self._project):
-            tasks = self._plan_service.get_tasks(self._project)
-            for task in tasks:
-                print(str(task))
+        if self._plan_service.has_commits(self._project):
+            commits = self._plan_service.get_commits(self._project)
+            for commit in commits:
+                print(str(commit))
 
             return
 
-        self._plan_service.create_task(self._project)
+        self._plan_service.create_commit(self._project)
