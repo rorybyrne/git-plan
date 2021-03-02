@@ -27,9 +27,9 @@ def main(subcommand: str, cli: CLI = Provide[Application.cli]):
     Parse CLI arguments and run the command.
     """
     try:
-        command = cli.get_command(subcommand)
-        command.run()
-    except CommandNotFound:
+        cli.invoke(subcommand)
+    except CommandNotFound as e:
+        print(e)
         parser.print_help()
     except RuntimeError:
         raise

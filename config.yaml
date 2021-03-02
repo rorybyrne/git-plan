@@ -1,4 +1,4 @@
 app:
   plan_home: $HOME/.local/share/git-plan
   projects_file: projects.json
-  task_template_file: PLAN_MSG
+  commit_template_file: PLAN_MSG
