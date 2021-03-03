@@ -13,7 +13,7 @@ class Project:
     def is_git_repository(self):
         return self._is_git_repository(self.root_dir)
 
-    def has_tasks(self):
+    def has_commits(self):
         return os.listdir(self.plan_dir)
 
     @property

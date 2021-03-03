@@ -9,7 +9,7 @@ from git_plan.service.ui import UIService
 
 
 class Edit(Command):
-    """Add a new task"""
+    """Edit an existing commit"""
 
     subcommand = 'edit'
 
@@ -25,12 +25,12 @@ class Edit(Command):
         pass
 
     def command(self):
-        """Create a new task"""
-        tasks = self._plan_service.get_tasks(self._project)
-        if not tasks:
-            print("No tasks to edit.")
+        """Create a new commit"""
+        commits = self._plan_service.get_commits(self._project)
+        if not commits:
+            print("No commits to edit.")
             return
 
-        chosen_task = self._ui_service.choose_task(tasks)
+        chosen_commit = self._ui_service.choose_commit(commits)
 
-        self._plan_service.edit_task(chosen_task)
+        self._plan_service.edit_commit(chosen_commit)

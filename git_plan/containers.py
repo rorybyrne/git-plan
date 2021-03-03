@@ -2,12 +2,12 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
-
 from dependency_injector import providers, containers
 
 from git_plan.cli.cli import CLI
 from git_plan.cli.commands.add import Add
 from git_plan.cli.commands.edit import Edit
+from git_plan.cli.commands.list import List
 from git_plan.cli.commands.plan import Plan
 from git_plan.oracle.oracle import Oracle
 from git_plan.service.plan import PlanService
@@ -27,7 +27,7 @@ class Services(containers.DeclarativeContainer):
     plan_service = providers.Singleton(
         PlanService,
         plan_home=config.app.plan_home,
-        task_template_file=config.app.task_template_file,
+        commit_template_file=config.app.commit_template_file,
     )
     project_service = providers.Singleton(
         ProjectService,
@@ -44,8 +44,22 @@ class Commands(containers.DeclarativeContainer):
     config = providers.Configuration()
     services = providers.DependenciesContainer()
 
-    plan_command = providers.Singleton(Plan, plan_service=services.plan_service, working_dir=config.project.working_dir)
-    add_command = providers.Singleton(Add, plan_service=services.plan_service, working_dir=config.project.working_dir)
+    plan_command = providers.Singleton(
+        Plan,
+        plan_service=services.plan_service,
+        working_dir=config.project.working_dir
+    )
+    list_command = providers.Singleton(
+        List,
+        plan_service=services.plan_service,
+        ui_service=services.ui_service,
+        working_dir=config.project.working_dir
+    )
+    add_command = providers.Singleton(
+        Add,
+        plan_service=services.plan_service,
+        working_dir=config.project.working_dir
+    )
     edit_command = providers.Singleton(
         Edit,
         ui_service=services.ui_service,
@@ -79,6 +93,7 @@ class Application(containers.DeclarativeContainer):
         CLI,
         commands=providers.List(
             commands.plan_command,
+            commands.list_command,
             commands.add_command,
             commands.edit_command
         )

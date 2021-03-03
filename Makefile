@@ -1,5 +1,7 @@
 .PHONY: install clean git-plan
 
+BASE_PYTHON=python3.9
+
 BASE_DIR=${HOME}/.local
 INSTALL_DIR=${BASE_DIR}/bin
 FILES_DIR=${BASE_DIR}/share/git-plan
@@ -18,7 +20,7 @@ install:
 	install -m 0644 share/PLAN_MSG $(FILES_DIR)
 	install -d $(SYSTEMD_DIR)
 	install -m 0644 share/$(SERVICE_FILE) $(SYSTEMD_DIR)
-	python3.7 -m venv $(FILES_DIR)/venv
+	$(BASE_PYTHON) -m venv $(FILES_DIR)/venv
 	$(FILES_DIR)/venv/bin/python -m pip install -U pip
 	$(FILES_DIR)/venv/bin/python -m pip install .
 	#systemctl --user enable $(SERVICE_FILE) --now

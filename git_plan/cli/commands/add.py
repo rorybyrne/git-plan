@@ -8,7 +8,7 @@ from git_plan.service.plan import PlanService
 
 
 class Add(Command):
-    """Add a new task"""
+    """Add a new commit"""
 
     subcommand = 'add'
 
@@ -23,5 +23,5 @@ class Add(Command):
         pass
 
     def command(self):
-        """Create a new task"""
-        self._plan_service.create_task(self._project)
+        """Create a new commit"""
+        self._plan_service.create_commit(self._project)

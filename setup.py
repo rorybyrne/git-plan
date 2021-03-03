@@ -7,6 +7,7 @@ setup(
     install_requires=[
         'dependency_injector[yaml]',
         'watchdog',
-        'cachetools'
+        'cachetools',
+        'rich'
     ]
 )
