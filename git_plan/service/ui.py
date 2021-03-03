@@ -20,12 +20,14 @@ class UIService:
         """Renders a list of commits in pretty print"""
         for idx, commit in enumerate(commits):
             self._render_commit(commit, str(idx + 1), headline_only)
+            if idx < len(commits) - 1:
+                print('')
 
     def _render_commit(self, commit: Commit, tag: str, headline_only):
         if headline_only:
-            print(f'[bold][{tag}][/bold] {commit.message.headline}\n')
+            print(f'[bold][{tag}][/bold] {commit.message.headline}')
         else:
             print(f'[bold][[magenta]{tag}[/magenta]][/bold] on {commit.branch}\n')
             print(f'    {commit.message.headline}\n')
-            print(f'    {commit.message.body}\n')
+            print(f'    {commit.message.body}')
 

@@ -2,43 +2,26 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
-import argparse
 import os
 import sys
 from pathlib import Path
+from typing import List
 
 from dependency_injector.wiring import inject, Provide
 
 from git_plan.cli.cli import CLI
 from git_plan.containers import Application
-from git_plan.exceptions import CommandNotFound
-
-
-def parse_args():
-    args_parser = argparse.ArgumentParser(prog='git-plan', description='A better workflow for git.')
-    args_parser.add_argument('subcommand', type=str, nargs='?', help='The subcommand to run')
-    return args_parser
 
 
 @inject
-def main(subcommand: str, cli: CLI = Provide[Application.cli]):
-    """Entrypoint
-
-    Parse CLI arguments and run the command.
-    """
-    try:
-        cli.invoke(subcommand)
-    except CommandNotFound as e:
-        print(e)
-        parser.print_help()
-    except RuntimeError:
-        raise
+def main(args: List[str], cli: CLI = Provide[Application.cli]):
+    """Entrypoint"""
+    cli.parse(args)
 
 
 if __name__ == "__main__":
     working_dir = os.getcwd()
-    parser = parse_args()
-    args = parser.parse_args()
+    args = sys.argv[1:]  # Might be []
 
     app = Application()
     app.config.from_yaml('config.yaml')
@@ -46,4 +29,4 @@ if __name__ == "__main__":
     app.config.set('project.working_dir', working_dir)
     app.wire(modules=[sys.modules[__name__]])  # What is this? Who knows, but it works.
 
-    main(args.subcommand)
+    main(args)

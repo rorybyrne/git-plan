@@ -2,6 +2,9 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
+from argparse import ArgumentParser
+from typing import Any
+
 from git_plan.exceptions import CommandNotFound
 from git_plan.cli.commands.command import Command
 from git_plan.model.project import Project
@@ -15,12 +18,11 @@ class Plan(Command):
     subcommand = 'plan'
 
     def __init__(self, plan_service: PlanService, working_dir: str):
+        super().__init__()
         assert plan_service, "Plan service not injected"
         assert working_dir, "Working dir not injected"
         self._plan_service = plan_service
         self._project = Project.from_working_dir(working_dir)
-
-        super().__init__()
 
     def pre_command(self):
         """Check whether a plan already exists?"""
@@ -42,3 +44,6 @@ class Plan(Command):
                 print(e)
 
         self._plan_service.create_commit(self._project)
+
+    def register_subparser(self, subparsers: Any):
+        subparsers.add_parser(Plan.subcommand, help='Add a new commit, or view existing ones.')
