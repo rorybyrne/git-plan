@@ -2,6 +2,8 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
+from typing import Any
+
 from git_plan.cli.commands.command import Command
 from git_plan.model.project import Project
 from git_plan.service.plan import PlanService
@@ -13,6 +15,7 @@ class Add(Command):
     subcommand = 'add'
 
     def __init__(self, plan_service: PlanService, working_dir: str):
+        super().__init__()
         assert plan_service, "Plan service not injected"
         assert working_dir, "Working dir not injected"
         self._plan_service = plan_service
@@ -25,3 +28,6 @@ class Add(Command):
     def command(self):
         """Create a new commit"""
         self._plan_service.create_commit(self._project)
+
+    def register_subparser(self, subparsers: Any):
+        subparsers.add_parser(Add.subcommand, help='Add a new commit plan.')
