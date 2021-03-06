@@ -7,7 +7,7 @@ A better workflow for git.
 </p>
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/9436784/110201184-ae83e280-7e59-11eb-82a0-7b205d8a725b.png">
+  <img src="https://user-images.githubusercontent.com/9436784/110204672-383cab80-7e6c-11eb-893b-5d23429572cc.png">
 </p>
 
 <p>
@@ -15,13 +15,13 @@ A better workflow for git.
 </p>
 
 <p>
-    Staging files for a <code>git commit</code> is frustrating if you have to untangle your changes into
+    Staging files for a <code>git commit</code> is frustrating if you have to untangle unrelated changes into
     multiple commits. The standard git workflow of "write code -> stage changes -> commit changes" encourages us to
     write code without thinking, and then punishes us when the time comes to commit.
 </p>
 <p>
     Now you can run <code>git plan</code> to write your commit message in advance, and then run <code>git plan commit</code>
-    to use that message as a template for your commit once you're ready to commit.
+    to use that message as a template for your commit once you're ready.
 </p>
 <p>
     You can even run <code>git plan add</code> to add more pre-planned commits, and then choose which one you want to
