@@ -45,9 +45,11 @@ A better workflow for git.
 <h2>Usage</h2>
 <ul>
     <li><code>git plan</code> - plan your first commit, or list existing plans</li>
+    <li><code>git plan help</code> - show the help message</li>
     <li><code>git plan list</code> - list existing plans</li>
     <li><code>git plan add</code> - plan a new commit</li>
     <li><code>git plan edit</code> - edit an existing plan</li>
+    <li><code>git plan delete</code> - delete an existing plan</li>
     <li><code>git plan commit</code> - commit one of your plans (launches <code>git commit</code> with your plan as a template)</li>
 </ul>
 

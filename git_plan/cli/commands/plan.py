@@ -34,8 +34,8 @@ class Plan(Command):
             except CommandNotFound as e:
                 print("OOPS GIT PLAN IS BROKEN.")
                 print(e)
-
-        self._plan_service.create_commit(self._project)
+        else:
+            self._cli.invoke('add', **kwargs)
 
     def register_subparser(self, subparsers: Any):
         subparsers.add_parser(Plan.subcommand, help='Add a new commit, or view existing ones.')
