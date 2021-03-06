@@ -51,7 +51,7 @@ class CommitMessage:
 class Commit:
     project: Project
     id: str
-    branch: str = 'gh-11/pretty-list'
+    branch: str = '<branch support coming soon>'
     _message: CommitMessage = field(init=False, default=None)
 
     EXT = '.txt'
