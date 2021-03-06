@@ -27,11 +27,15 @@ class Services(containers.DeclarativeContainer):
     """Dependency structure for services"""
     config = providers.Configuration()
 
+    git_service = providers.Singleton(
+        GitService
+    )
     plan_service = providers.Singleton(
         PlanService,
         plan_home=config.app.plan_home,
         commit_template_file=config.app.commit_template_file,
-        edit_template_file=config.app.edit_template_file
+        edit_template_file=config.app.edit_template_file,
+        git_service=git_service
     )
     project_service = providers.Singleton(
         ProjectService,
@@ -40,9 +44,6 @@ class Services(containers.DeclarativeContainer):
     )
     ui_service = providers.Singleton(
         UIService
-    )
-    git_service = providers.Singleton(
-        GitService
     )
 
 

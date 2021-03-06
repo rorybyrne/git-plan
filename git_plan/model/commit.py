@@ -2,6 +2,7 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
+import json
 import os
 from dataclasses import dataclass, field
 from typing import List
@@ -25,11 +26,9 @@ class CommitMessage:
         """Load a commit's message from a file"""
         try:
             with open(path, 'r') as f:
-                headline = f.readline().strip()
-                f.readline()
-                body = f.read().strip()
+                commit_data = json.load(f)
 
-                return CommitMessage(headline, body)
+            return CommitMessage(**commit_data['message'])
         except Exception as e:
             print(e)
             raise RuntimeError(f'Failed to load commit from disk: {path}')
@@ -45,13 +44,11 @@ class CommitMessage:
             raise RuntimeError(f'Could not parse commit message from string: "{string}"')
 
 
-
-
 @dataclass
 class Commit:
     project: Project
     id: str
-    branch: str = '<branch support coming soon>'
+    branch: str
     _message: CommitMessage = field(init=False, default=None)
 
     EXT = '.txt'
@@ -88,8 +85,16 @@ class Commit:
         # Create plan/ directory if needed
         os.makedirs(os.path.dirname(self.path), exist_ok=True)
 
+        commit_dict = {
+            "branch": self.branch,
+            'message': {
+                "headline": self.message.headline,
+                "body": self.message.body
+            },
+        }
+
         with open(self.path, 'w') as f:
-            f.write(str(self.message))
+            f.write(json.dumps(commit_dict))
 
     @classmethod
     def fetch_commits(cls, project: Project) -> List['Commit']:
@@ -105,9 +110,13 @@ class Commit:
     def from_file(cls, filename: str, project: Project):
         """Load a commit from a file"""
         full_path = os.path.join(project.plan_dir, filename)
-        commit_message = CommitMessage.from_file(full_path)
+        with open(full_path, 'r') as f:
+            commit_data = json.load(f)
+
+        commit_message = CommitMessage(**commit_data['message'])
         commit_id = filename.split('.')[0].split('-')[1]
-        commit = Commit(project, commit_id)
+        branch = commit_data['branch']
+        commit = Commit(project, commit_id, branch)
         commit.message = commit_message
 
         return commit

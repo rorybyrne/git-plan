@@ -18,8 +18,8 @@ class GitService:
     @staticmethod
     def commit(commit: Commit):
         """Runs git commit with the given commit-plan as a template"""
-        cmd = 'git commit -t'.split(' ')
-        cmd.append(f'{commit.path}')
+        cmd = 'git commit -e -m'.split(' ')
+        cmd.append(str(commit.message))
 
         subprocess.run(cmd)
 
@@ -30,3 +30,10 @@ class GitService:
 
         result = subprocess.run(cmd)
         return result.returncode == 1
+
+    @staticmethod
+    def get_current_branch():
+        cmd = 'git branch --show-current'.split(' ')
+
+        result = subprocess.run(cmd, capture_output=True)
+        return result.stdout.decode('utf-8')
