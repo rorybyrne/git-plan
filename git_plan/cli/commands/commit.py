@@ -31,7 +31,7 @@ class Commit(Command):
         """Perhaps some validation?"""
         pass
 
-    def command(self):
+    def command(self, **kwargs):
         """Create a new commit"""
         commits = self._plan_service.get_commits(self._project)
         if not commits:
