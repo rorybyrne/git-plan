@@ -25,7 +25,7 @@ class Add(Command):
         """Perhaps some validation?"""
         pass
 
-    def command(self):
+    def command(self, **kwargs):
         """Create a new commit"""
         self._plan_service.create_commit(self._project)
 

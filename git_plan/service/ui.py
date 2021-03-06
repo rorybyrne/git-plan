@@ -13,7 +13,7 @@ from git_plan.model.commit import Commit
 class UIService:
 
     @staticmethod
-    def choose_commit(commits: List[Commit]):
+    def choose_commit(commits: List[Commit], message: str):
         """Choose from a set of tasks"""
         if len(commits) == 0:
             raise RuntimeError("Cannot choose from an empty list of commits.")
@@ -23,7 +23,7 @@ class UIService:
         options = [
             inquirer.List(
                 'commit',
-                message='What plan do you want to commit?',
+                message=message,
                 choices=[(c.message.headline, c) for c in commits]
             )
         ]
@@ -31,6 +31,19 @@ class UIService:
         answer = inquirer.prompt(options)
 
         return answer['commit']
+
+    @staticmethod
+    def confirm(message: str) -> bool:
+        key = 'confirm'
+        questions = [inquirer.Confirm(key, message=message)]
+
+        answers = inquirer.prompt(questions)
+
+        return answers[key]
+
+    @staticmethod
+    def bold(message: str):
+        print(f'[bold]{message}[/bold]')
 
     def render_commits(self, commits: List[Commit], headline_only=True):
         """Renders a list of commits in pretty print"""

@@ -27,14 +27,14 @@ class Edit(Command):
         """Perhaps some validation?"""
         pass
 
-    def command(self):
+    def command(self, **kwargs):
         """Create a new commit"""
         commits = self._plan_service.get_commits(self._project)
         if not commits:
             print("No commits to edit.")
             return
 
-        chosen_commit = self._ui_service.choose_commit(commits)
+        chosen_commit = self._ui_service.choose_commit(commits, 'Which plan do you want to edit?')
 
         self._plan_service.edit_commit(chosen_commit)
 

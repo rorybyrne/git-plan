@@ -28,7 +28,7 @@ class List(Command):
         """Check whether a plan already exists?"""
         pass
 
-    def command(self, short=False):
+    def command(self, short=False, **kwargs):
         """List the planned commits"""
         commits = self._plan_service.get_commits(self._project)
         commits = sorted(commits, key=lambda c: c.id)

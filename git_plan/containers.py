@@ -7,6 +7,7 @@ from dependency_injector import providers, containers
 from git_plan.cli.cli import CLI
 from git_plan.cli.commands.add import Add
 from git_plan.cli.commands.commit import Commit
+from git_plan.cli.commands.delete import Delete
 from git_plan.cli.commands.edit import Edit
 from git_plan.cli.commands.help import Help
 from git_plan.cli.commands.list import List
@@ -72,6 +73,12 @@ class Commands(containers.DeclarativeContainer):
         plan_service=services.plan_service,
         working_dir=config.project.working_dir
     )
+    delete_command = providers.Singleton(
+        Delete,
+        ui_service=services.ui_service,
+        plan_service=services.plan_service,
+        working_dir=config.project.working_dir
+    )
     commit_command = providers.Singleton(
         Commit,
         ui_service=services.ui_service,
@@ -113,6 +120,7 @@ class Application(containers.DeclarativeContainer):
             commands.add_command,
             commands.edit_command,
             commands.commit_command,
-            commands.help_command
+            commands.help_command,
+            commands.delete_command
         )
     )

@@ -46,7 +46,11 @@ class PlanService:
 
     def delete_commit(self, commit: Commit):
         """Delete the chosen commit"""
-        pass
+        path = commit.path
+        if not os.path.exists(path):
+            raise RuntimeError(f'Commit not found: {commit}')
+
+        os.remove(path)
 
     def has_commits(self, project: Project) -> bool:
         """Check if a plan already exists in the given directory"""

@@ -26,11 +26,11 @@ class Plan(Command):
         """Check whether a plan already exists?"""
         pass
 
-    def command(self):
+    def command(self, **kwargs):
         """Plan a commit"""
         if self._plan_service.has_commits(self._project):
             try:
-                return self._cli.invoke('list')
+                return self._cli.invoke('list', **kwargs)
             except CommandNotFound as e:
                 print("OOPS GIT PLAN IS BROKEN.")
                 print(e)
