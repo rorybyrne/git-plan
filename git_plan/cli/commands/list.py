@@ -29,13 +29,7 @@ class List(Command):
         pass
 
     def command(self, short=False):
-        """Use the PlanService to create the plan in the local .git/ directory
-
-        1. Present a VIM editor with the PLAN_MSG template
-        2. Save the result to a stable location
-        3. Launch an observer to watch the development environment
-            3a. When does the observer terminate?
-        """
+        """List the planned commits"""
         commits = self._plan_service.get_commits(self._project)
         commits = sorted(commits, key=lambda c: c.id)
         return self._ui_service.render_commits(commits, headline_only=short)

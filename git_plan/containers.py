@@ -10,7 +10,6 @@ from git_plan.cli.commands.commit import Commit
 from git_plan.cli.commands.edit import Edit
 from git_plan.cli.commands.list import List
 from git_plan.cli.commands.plan import Plan
-from git_plan.oracle.oracle import Oracle
 from git_plan.service.git import GitService
 from git_plan.service.plan import PlanService
 from git_plan.service.project import ProjectService
@@ -110,10 +109,4 @@ class Application(containers.DeclarativeContainer):
             commands.edit_command,
             commands.commit_command
         )
-    )
-
-    oracle = providers.Singleton(
-        Oracle,
-        plan_service=services.plan_service,
-        plan_home=config.app.plan_home
     )
