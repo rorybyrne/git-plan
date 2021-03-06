@@ -16,7 +16,7 @@ class CommitMessage:
 
     def __str__(self):
         return f'''{self.headline}
-        
+
 {self.body}
         '''
 
