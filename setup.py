@@ -6,7 +6,6 @@ setup(
     packages=find_packages(),
     install_requires=[
         'dependency_injector[yaml]',
-        'watchdog',
         'cachetools',
         'rich',
         'inquirer'
