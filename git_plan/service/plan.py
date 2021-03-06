@@ -25,6 +25,8 @@ class PlanService:
 
         1. Create a new file in .git/ containing the plan
         """
+        if not project.is_initialized():
+            self._initialize_project(project)
         message = self._plan_commit()
         commit_id = str(int(time.time()))
         commit = Commit(project, commit_id)
@@ -45,18 +47,20 @@ class PlanService:
         """Delete the chosen commit"""
         pass
 
-    @staticmethod
-    def has_commits(project: Project) -> bool:
+    def has_commits(self, project: Project) -> bool:
         """Check if a plan already exists in the given directory"""
+        if not project.is_initialized():
+            self._initialize_project(project)
         return project.has_commits()
 
-    @staticmethod
-    def get_commits(project: Project) -> List[Commit]:
+    def get_commits(self, project: Project) -> List[Commit]:
         """Print the status of the plan
 
         Raises:
             RuntimeError:   Commit file not found
         """
+        if not project.is_initialized():
+            self._initialize_project(project)
         return Commit.fetch_commits(project)
 
     # Private #############
@@ -96,3 +100,13 @@ class PlanService:
         body = '\n'.join(lines[1:]).strip()
 
         return ''.join([headline, '\n', '\n', body])
+
+    @staticmethod
+    def _initialize_project(project: Project):
+        plan_dir = project.plan_dir
+        if os.path.exists(plan_dir):
+            print("Project already initialized.")
+            return
+
+        os.mkdir(plan_dir)
+

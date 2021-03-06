@@ -30,3 +30,7 @@ class Project:
     @staticmethod
     def _is_git_repository(directory: str) -> bool:
         return os.path.isdir(os.path.join(directory, '.git'))
+
+    def is_initialized(self):
+        return os.path.exists(self.plan_dir)
+
