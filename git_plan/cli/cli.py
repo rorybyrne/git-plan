@@ -50,6 +50,9 @@ class CLI:
 
         return command
 
+    def help(self):
+        self._parser.print_help()
+
     def _parse_args(self, args: List[str]):
         parsed_args = self._parser.parse_args(args)
         parsed_args.subcommand = parsed_args.subcommand or 'plan'

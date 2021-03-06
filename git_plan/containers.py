@@ -8,6 +8,7 @@ from git_plan.cli.cli import CLI
 from git_plan.cli.commands.add import Add
 from git_plan.cli.commands.commit import Commit
 from git_plan.cli.commands.edit import Edit
+from git_plan.cli.commands.help import Help
 from git_plan.cli.commands.list import List
 from git_plan.cli.commands.plan import Plan
 from git_plan.service.git import GitService
@@ -77,6 +78,9 @@ class Commands(containers.DeclarativeContainer):
         git_service=services.git_service,
         working_dir=config.project.working_dir
     )
+    help_command = providers.Singleton(
+        Help
+    )
 
 
 class Application(containers.DeclarativeContainer):
@@ -107,6 +111,7 @@ class Application(containers.DeclarativeContainer):
             commands.list_command,
             commands.add_command,
             commands.edit_command,
-            commands.commit_command
+            commands.commit_command,
+            commands.help_command
         )
     )
