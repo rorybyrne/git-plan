@@ -39,6 +39,9 @@ A better workflow for git.
     <li><code>make install</code></li>
 </ol>
 <p>
+    If you have trouble with the install, check what the <code>Makefile</code> is doing. Get in touch with me if you need help.
+</p>
+<p>
     To uninstall, run <code>make uninstall</code>
 </p>
 
