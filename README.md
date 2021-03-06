@@ -11,16 +11,16 @@ A better workflow for git.
 </p>
 
 <p>
-    Plan your commits before you start writing code.
+    Git plan allows you to write your commit message before you start writing code.
 </p>
 
 <p>
-    Staging files for a <code>git commit</code> is frustrating if you have to untangle unrelated changes into
-    multiple commits. The standard git workflow of "write code -> stage changes -> commit changes" encourages us to
-    write code without thinking, and then punishes us when the time comes to commit.
+    The most frustrating part of using git is untangling unrelated changes into multiple commits. This is encouraged
+    by the git workflow of "write code -> stage changes -> commit changes", and then we are punished by git 
+    when the time comes to commit.
 </p>
 <p>
-    Now you can run <code>git plan</code> to write your commit message in advance, and then run <code>git plan commit</code>
+    Git plan allows you to write your commit message in advance via <code>git plan</code>, and then run <code>git plan commit</code>
     to use that message as a template for your commit once you're ready.
 </p>
 <p>
