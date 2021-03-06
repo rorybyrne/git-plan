@@ -30,6 +30,7 @@ class Services(containers.DeclarativeContainer):
         PlanService,
         plan_home=config.app.plan_home,
         commit_template_file=config.app.commit_template_file,
+        edit_template_file=config.app.edit_template_file
     )
     project_service = providers.Singleton(
         ProjectService,

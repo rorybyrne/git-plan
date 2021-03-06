@@ -8,15 +8,26 @@ FILES_DIR=${BASE_DIR}/share/git-plan
 SYSTEMD_DIR=${BASE_DIR}/share/systemd/user
 
 EXEC_FILES=git-plan
-SHARE_FILES=PLAN_MSG
+SHARE_FILES=PLAN_TEMPLATE
+SHARE_FILES+=EDIT_TEMPLATE
 SERVICE_FILE=gitplan-oracle.service
 
-install:
+check-env:
+ifndef HOME
+	$(error Environment variable HOME is undefined)
+endif
+
+check-dirs:
+	@test -d $(BASE_DIR) || (echo "Missing $(BASE_DIR) directory, which is base directory" && exit 1)
+	@test -d $(INSTALL_DIR) || (echo "Missing the install directory: $(INSTALL_DIR)" && exit 1)
+
+install: check-env check-dirs
 	@echo "Installing to $(INSTALL_DIR)"
 	install -d $(INSTALL_DIR)
 	install -m 0755 scripts/* $(INSTALL_DIR)
 	install -d $(FILES_DIR)
-	install -m 0644 share/PLAN_MSG $(FILES_DIR)
+	install -m 0644 share/PLAN_TEMPLATE $(FILES_DIR)
+	install -m 0644 share/EDIT_TEMPLATE $(FILES_DIR)
 	#install -d $(SYSTEMD_DIR)
 	#install -m 0644 share/$(SERVICE_FILE) $(SYSTEMD_DIR)
 	$(BASE_PYTHON) -m venv $(FILES_DIR)/venv

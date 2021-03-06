@@ -15,9 +15,10 @@ from git_plan.model.project import Project
 class PlanService:
     """Manage the user's plans"""
 
-    def __init__(self, plan_home: str, commit_template_file: str):
+    def __init__(self, plan_home: str, commit_template_file: str, edit_template_file: str):
         assert commit_template_file, "Commit template filename missing"
         self._commit_template_file = os.path.join(plan_home, commit_template_file)
+        self._edit_template_file = os.path.join(plan_home, edit_template_file)
         self._plan_home = plan_home
 
     def create_commit(self, project: Project):
@@ -35,7 +36,7 @@ class PlanService:
 
     def edit_commit(self, commit: Commit):
         """Update the plan in the given directory"""
-        template = self._get_template(self._commit_template_file) \
+        template = self._get_template(self._edit_template_file) \
             .replace('%headline%', commit.message.headline) \
             .replace('%body%', commit.message.body)
 
@@ -68,9 +69,7 @@ class PlanService:
     def _plan_commit(self, initial: str = None) -> CommitMessage:
         editor = os.environ.get('EDITOR', 'vim')
         if not initial:
-            initial = self._get_template(self._commit_template_file) \
-                .replace('%headline%', '') \
-                .replace('%body%', '')
+            initial = self._get_template(self._commit_template_file)
 
         with tempfile.NamedTemporaryFile(suffix=".tmp", mode='r+') as tf:
             tf.write(initial)
