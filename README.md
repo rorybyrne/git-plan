@@ -33,3 +33,15 @@ A better workflow for git.
 <p>
     To uninstall, run <code>make uninstall</code>
 </p>
+
+<h2>Usage</h2>
+<ul>
+    <li><code>git plan</code> - plan your first commit, or list existing plans</li>
+    <li><code>git plan list</code> - list existing plans</li>
+    <li><code>git plan add</code> - plan a new commit</li>
+    <li><code>git plan edit</code> - edit an existing plan</li>
+    <li><code>git plan commit</code> - commit one of your plans (launches <code>git commit</code> with your plan as a template)</li>
+</ul>
+
+<h2>Contributing</h2>
+<p>Give me a shout - rory@rory.bio</p>
