@@ -10,15 +10,17 @@ from typing import List
 
 from git_plan.model.commit import Commit, CommitMessage
 from git_plan.model.project import Project
+from git_plan.service.git import GitService
 
 
 class PlanService:
     """Manage the user's plans"""
 
-    def __init__(self, plan_home: str, commit_template_file: str, edit_template_file: str):
+    def __init__(self, plan_home: str, commit_template_file: str, git_service: GitService, edit_template_file: str):
         assert commit_template_file, "Commit template filename missing"
         self._commit_template_file = os.path.join(plan_home, commit_template_file)
         self._edit_template_file = os.path.join(plan_home, edit_template_file)
+        self._git_service = git_service
         self._plan_home = plan_home
 
     def create_commit(self, project: Project):
@@ -30,7 +32,8 @@ class PlanService:
             self._initialize_project(project)
         message = self._plan_commit()
         commit_id = str(int(time.time()))
-        commit = Commit(project, commit_id)
+        branch = self._git_service.get_current_branch()
+        commit = Commit(project, commit_id, branch)
         commit.message = message
         commit.save()
 
