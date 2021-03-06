@@ -37,10 +37,14 @@ class CommitMessage:
     @classmethod
     def from_string(cls, string: str):
         components = string.split('\n\n')
-        if len(components) != 2:
+        if len(components) == 2:
+            return CommitMessage(components[0], components[1])
+        elif len(components) > 2:
+            return CommitMessage(components[0], '\n\n'.join(components[1:]))
+        else:
             raise RuntimeError(f'Could not parse commit message from string: "{string}"')
 
-        return CommitMessage(components[0], components[1])
+
 
 
 @dataclass

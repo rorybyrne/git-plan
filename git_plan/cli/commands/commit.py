@@ -38,11 +38,11 @@ class Commit(Command):
             print("No commits planned.")
             return
 
-        chosen_commit = self._ui_service.choose_commit(commits)
         if not self._git_service.has_staged_files():
             print("No staged files.")
             return
 
+        chosen_commit = self._ui_service.choose_commit(commits)
         self._git_service.commit(chosen_commit)
 
     def register_subparser(self, subparsers: Any):

@@ -8,6 +8,7 @@ setup(
         'dependency_injector[yaml]',
         'watchdog',
         'cachetools',
-        'rich'
+        'rich',
+        'inquirer'
     ]
 )

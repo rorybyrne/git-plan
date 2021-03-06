@@ -4,6 +4,7 @@ Author: Rory Byrne <rory@rory.bio>
 """
 from typing import List
 
+import inquirer
 from rich import print
 
 from git_plan.model.commit import Commit
@@ -12,9 +13,24 @@ from git_plan.model.commit import Commit
 class UIService:
 
     @staticmethod
-    def choose_commit(tasks: List[Commit]):
+    def choose_commit(commits: List[Commit]):
         """Choose from a set of tasks"""
-        return tasks[0]
+        if len(commits) == 0:
+            raise RuntimeError("Cannot choose from an empty list of commits.")
+        elif len(commits) == 1:
+            return commits[0]
+
+        options = [
+            inquirer.List(
+                'commit',
+                message='What plan do you want to commit?',
+                choices=[(c.message.headline, c) for c in commits]
+            )
+        ]
+
+        answer = inquirer.prompt(options)
+
+        return answer['commit']
 
     def render_commits(self, commits: List[Commit], headline_only=True):
         """Renders a list of commits in pretty print"""
@@ -23,11 +39,13 @@ class UIService:
             if idx < len(commits) - 1:
                 print('')
 
-    def _render_commit(self, commit: Commit, tag: str, headline_only):
+    @staticmethod
+    def _render_commit(commit: Commit, tag: str, headline_only):
         if headline_only:
             print(f'[bold][{tag}][/bold] {commit.message.headline}')
         else:
             print(f'[bold][[magenta]{tag}[/magenta]][/bold] on {commit.branch}\n')
             print(f'    {commit.message.headline}\n')
-            print(f'    {commit.message.body}')
-
+            body_lines = commit.message.body.split('\n')
+            for line in body_lines:
+                print(f'    {line}')
