@@ -4,6 +4,7 @@ Author: Rory Byrne <rory@rory.bio>
 """
 import subprocess
 
+from git_plan.exceptions import CommitAbandoned
 from git_plan.model.commit import Commit
 
 
@@ -19,7 +20,9 @@ class GitService:
         cmd = 'git commit -e -m'.split(' ')
         cmd.append(str(commit.message))
 
-        subprocess.run(cmd)
+        result = subprocess.run(cmd)
+        if result.returncode > 0:
+            raise CommitAbandoned()
 
     @staticmethod
     def has_staged_files() -> bool:
