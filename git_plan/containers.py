@@ -13,6 +13,7 @@ from git_plan.cli.commands.help import Help
 from git_plan.cli.commands.init import Init
 from git_plan.cli.commands.list import List
 from git_plan.cli.commands.plan import Plan
+from git_plan.model.project import Project
 from git_plan.service.git import GitService
 from git_plan.service.plan import PlanService
 from git_plan.service.project import ProjectService
@@ -61,37 +62,38 @@ class Commands(containers.DeclarativeContainer):
     plan_command = providers.Singleton(
         Plan,
         plan_service=services.plan_service,
-        working_dir=config.project.working_dir
+        project=core.project
     )
     list_command = providers.Singleton(
         List,
         plan_service=services.plan_service,
         ui_service=services.ui_service,
-        working_dir=config.project.working_dir
+        project=core.project
     )
     add_command = providers.Singleton(
         Add,
         plan_service=services.plan_service,
-        working_dir=config.project.working_dir
+        project=core.project
     )
     edit_command = providers.Singleton(
         Edit,
         ui_service=services.ui_service,
         plan_service=services.plan_service,
-        working_dir=config.project.working_dir
+        project=core.project
     )
     delete_command = providers.Singleton(
         Delete,
         ui_service=services.ui_service,
         plan_service=services.plan_service,
-        working_dir=config.project.working_dir
+        project=core.project
     )
     commit_command = providers.Singleton(
         Commit,
         ui_service=services.ui_service,
         plan_service=services.plan_service,
         git_service=services.git_service,
-        working_dir=config.project.working_dir
+        project=core.project
+    )
     init_command = providers.Singleton(
         Init,
         ui_service=services.ui_service,

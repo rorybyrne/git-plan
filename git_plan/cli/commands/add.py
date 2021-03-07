@@ -5,21 +5,20 @@
 from typing import Any
 
 from git_plan.cli.commands.command import Command
-from git_plan.model.project import Project
 from git_plan.service.plan import PlanService
+from git_plan.util.decorators import requires_initialized
 
 
+@requires_initialized
 class Add(Command):
     """Add a new commit"""
 
     subcommand = 'add'
 
-    def __init__(self, plan_service: PlanService, working_dir: str):
-        super().__init__()
+    def __init__(self, plan_service: PlanService, **kwargs):
+        super().__init__(**kwargs)
         assert plan_service, "Plan service not injected"
-        assert working_dir, "Working dir not injected"
         self._plan_service = plan_service
-        self._project = Project.from_working_dir(working_dir)
 
     def pre_command(self):
         """Perhaps some validation?"""
