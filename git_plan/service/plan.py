@@ -17,24 +17,20 @@ class PlanService:
     """Manage the user's plans"""
 
     def __init__(self, plan_home: str, commit_template_file: str, git_service: GitService, edit_template_file: str):
-        assert commit_template_file, "Commit template filename missing"
+        assert plan_home, "plan_home missing"
+        assert edit_template_file, "edit_template_file missing"
+        assert commit_template_file, "commit_template_file missing"
         self._commit_template_file = os.path.join(plan_home, commit_template_file)
         self._edit_template_file = os.path.join(plan_home, edit_template_file)
         self._git_service = git_service
         self._plan_home = plan_home
 
-    def create_commit(self, project: Project):
-        """Create a plan in the given directory
-
-        1. Create a new file in .git/ containing the plan
-        """
+    def add_commit(self, project: Project):
+        """Create a plan in the given directory"""
         if not project.is_initialized():
             self._initialize_project(project)
-        message = self._plan_commit()
         commit_id = str(int(time.time()))
-        branch = self._git_service.get_current_branch()
-        commit = Commit(project, commit_id, branch)
-        commit.message = message
+        commit = self._create_commit(project, commit_id)
         commit.save()
 
     def edit_commit(self, commit: Commit):
@@ -43,7 +39,7 @@ class PlanService:
             .replace('%headline%', commit.message.headline) \
             .replace('%body%', commit.message.body)
 
-        new_message = self._plan_commit(initial=template)
+        new_message = self._prompt_user_for_plan(initial=template)
         commit.message = new_message
         commit.save()
 
@@ -73,7 +69,17 @@ class PlanService:
 
     # Private #############
 
-    def _plan_commit(self, initial: str = None) -> CommitMessage:
+    def _create_commit(self, project: Project, commit_id: str):
+        message = self._prompt_user_for_plan()
+        if not message or message.headline == '':
+            raise RuntimeError("Invalid commit plan. Please include at least a headline.")
+
+        branch = self._git_service.get_current_branch()
+        commit = Commit(project, commit_id, branch)
+        commit.message = message
+        return commit
+
+    def _prompt_user_for_plan(self, initial: str = None) -> CommitMessage:
         editor = os.environ.get('EDITOR', 'vim')
         if not initial:
             initial = self._get_template(self._commit_template_file)
