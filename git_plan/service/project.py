@@ -5,6 +5,8 @@ Author: Rory Byrne <rory@rory.bio>
 import json
 import os
 
+from git_plan.model.project import Project
+
 
 class ProjectService:
 
@@ -23,3 +25,12 @@ class ProjectService:
         except FileNotFoundError:
             print("Couldn't find plans file")
             return []
+
+    @staticmethod
+    def initialize(project: Project):
+        plan_dir = project.plan_dir
+        if os.path.exists(plan_dir):
+            print("Project already initialized.")
+            return
+
+        os.mkdir(plan_dir)

@@ -10,6 +10,7 @@ from git_plan.cli.commands.commit import Commit
 from git_plan.cli.commands.delete import Delete
 from git_plan.cli.commands.edit import Edit
 from git_plan.cli.commands.help import Help
+from git_plan.cli.commands.init import Init
 from git_plan.cli.commands.list import List
 from git_plan.cli.commands.plan import Plan
 from git_plan.service.git import GitService
@@ -21,6 +22,10 @@ from git_plan.service.ui import UIService
 class Core(containers.DeclarativeContainer):
     """Global configuration for the system"""
     config = providers.Configuration()
+    project = providers.Singleton(
+        Project,
+        root_dir=config.project.working_dir
+    )
 
 
 class Services(containers.DeclarativeContainer):
@@ -51,6 +56,7 @@ class Commands(containers.DeclarativeContainer):
     """Dependency structure for Commands"""
     config = providers.Configuration()
     services = providers.DependenciesContainer()
+    core = providers.DependenciesContainer()
 
     plan_command = providers.Singleton(
         Plan,
@@ -86,6 +92,11 @@ class Commands(containers.DeclarativeContainer):
         plan_service=services.plan_service,
         git_service=services.git_service,
         working_dir=config.project.working_dir
+    init_command = providers.Singleton(
+        Init,
+        ui_service=services.ui_service,
+        project_service=services.project_service,
+        project=core.project
     )
     help_command = providers.Singleton(
         Help
@@ -103,13 +114,14 @@ class Application(containers.DeclarativeContainer):
 
     services = providers.Container(
         Services,
-        config=config
+        config=config,
     )
 
     commands = providers.Container(
         Commands,
         config=config,
-        services=services
+        services=services,
+        core=core
     )
 
     # Entrypoints
@@ -122,6 +134,7 @@ class Application(containers.DeclarativeContainer):
             commands.edit_command,
             commands.commit_command,
             commands.help_command,
+            commands.init_command,
             commands.delete_command
         )
     )
