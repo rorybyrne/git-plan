@@ -5,6 +5,7 @@ Author: Rory Byrne <rory@rory.bio>
 from typing import Any
 
 from git_plan.cli.commands.command import Command
+from git_plan.exceptions import CommitAbandoned
 from git_plan.model.project import Project
 from git_plan.service.git import GitService
 from git_plan.service.plan import PlanService
@@ -43,7 +44,12 @@ class Commit(Command):
             return
 
         chosen_commit = self._ui_service.choose_commit(commits, 'Which plan do you want to commit?')
-        self._git_service.commit(chosen_commit)
+        try:
+            self._git_service.commit(chosen_commit)
+            self._plan_service.delete_commit(chosen_commit)
+        except CommitAbandoned:
+            print("Commit abandoned.")
+            pass
 
     def register_subparser(self, subparsers: Any):
         subparsers.add_parser(Commit.subcommand, help='Commit a plan.')
