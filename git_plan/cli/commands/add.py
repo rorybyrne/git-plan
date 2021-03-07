@@ -27,7 +27,7 @@ class Add(Command):
 
     def command(self, **kwargs):
         """Create a new commit"""
-        self._plan_service.create_commit(self._project)
+        self._plan_service.add_commit(self._project)
 
     def register_subparser(self, subparsers: Any):
         subparsers.add_parser(Add.subcommand, help='Add a new commit plan.')

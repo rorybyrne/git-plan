@@ -4,8 +4,6 @@ Author: Rory Byrne <rory@rory.bio>
 """
 import subprocess
 
-from rich import print
-
 from git_plan.model.commit import Commit
 
 
@@ -33,7 +31,12 @@ class GitService:
 
     @staticmethod
     def get_current_branch():
+        """Gets the current branch via git"""
         cmd = 'git branch --show-current'.split(' ')
 
         result = subprocess.run(cmd, capture_output=True)
-        return result.stdout.decode('utf-8')
+        branch = result.stdout.decode('utf-8')
+        if not branch or branch == '':
+            raise RuntimeError(f'Invalid branch: "{branch}"')
+
+        return branch

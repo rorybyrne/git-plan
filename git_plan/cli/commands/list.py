@@ -31,6 +31,10 @@ class List(Command):
     def command(self, short=False, **kwargs):
         """List the planned commits"""
         commits = self._plan_service.get_commits(self._project)
+        if len(commits) == 0:
+            print("No commit plans.")
+            return
+
         commits = sorted(commits, key=lambda c: c.id)
         return self._ui_service.render_commits(commits, headline_only=short)
 
