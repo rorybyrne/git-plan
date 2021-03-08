@@ -7,7 +7,7 @@ A better workflow for git.
 </p>
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/9436784/110204672-383cab80-7e6c-11eb-893b-5d23429572cc.png">
+  <img src="https://user-images.githubusercontent.com/9436784/110315084-a7e39f80-8000-11eb-8a14-3799c7e2cfd3.png">
 </p>
 
 <p>
