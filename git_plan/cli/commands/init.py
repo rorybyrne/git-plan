@@ -25,9 +25,12 @@ class Init(Command):
 
     def command(self, **kwargs):
         """Initialize the project if it is not already initialized"""
+        if not self._project.is_git_repository():
+            self._ui.bold("Not in a git repository.")
+            return
+
         if self._project.is_initialized():
             self._ui.bold("Git plan is already initialized.")
-            return
         else:
             self._project_service.initialize(self._project)
             self._ui.bold("Initialized git plan.")
