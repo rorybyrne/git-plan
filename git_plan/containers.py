@@ -60,6 +60,7 @@ class Commands(containers.DeclarativeContainer):
     plan_command = providers.Singleton(
         Plan,
         plan_service=services.plan_service,
+        ui_service=services.ui_service,
         project=core.project
     )
     list_command = providers.Singleton(
@@ -71,6 +72,7 @@ class Commands(containers.DeclarativeContainer):
     add_command = providers.Singleton(
         Add,
         plan_service=services.plan_service,
+        ui_service=services.ui_service,
         project=core.project
     )
     edit_command = providers.Singleton(

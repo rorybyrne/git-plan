@@ -8,7 +8,6 @@ from git_plan.cli.commands.command import Command
 from git_plan.exceptions import CommitAbandoned
 from git_plan.service.git import GitService
 from git_plan.service.plan import PlanService
-from git_plan.service.ui import UIService
 from git_plan.util.decorators import requires_initialized
 
 
@@ -18,14 +17,12 @@ class Commit(Command):
 
     subcommand = 'commit'
 
-    def __init__(self, plan_service: PlanService, ui_service: UIService, git_service: GitService, **kwargs):
+    def __init__(self, plan_service: PlanService, git_service: GitService, **kwargs):
         super().__init__(**kwargs)
         assert plan_service, "Plan service not injected"
         assert git_service, "Git service not injected"
-        assert ui_service, "UI service not injected"
         self._plan_service = plan_service
         self._git_service = git_service
-        self._ui_service = ui_service
 
     def pre_command(self):
         """Perhaps some validation?"""
@@ -42,7 +39,7 @@ class Commit(Command):
             print("No staged files.")
             return
 
-        chosen_commit = self._ui_service.choose_commit(commits, 'Which plan do you want to commit?')
+        chosen_commit = self._ui.choose_commit(commits, 'Which plan do you want to commit?')
         try:
             self._git_service.commit(chosen_commit)
             self._plan_service.delete_commit(chosen_commit)

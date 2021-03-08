@@ -8,6 +8,7 @@ import time
 from subprocess import call
 from typing import List
 
+from git_plan.exceptions import PlanEmpty
 from git_plan.model.commit import Commit, CommitMessage
 from git_plan.model.project import Project
 from git_plan.service.git import GitService
@@ -70,7 +71,7 @@ class PlanService:
 
     # Private #############
 
-    def _create_commit(self, project: Project, commit_id: str):
+    def _create_commit(self, project: Project, commit_id: str) -> Commit:
         message = self._prompt_user_for_plan()
         if not message or message.headline == '':
             raise RuntimeError("Invalid commit plan. Please include at least a headline.")
@@ -109,6 +110,9 @@ class PlanService:
     @staticmethod
     def _post_process_commit(lines: List[str]):
         lines = [line.strip() for line in lines if not line.startswith('#') or line == '\n']
+        if not lines or len(lines) == 0:
+            raise PlanEmpty()
+
         headline = lines[0].strip()
         body = '\n'.join(lines[1:]).strip()
 

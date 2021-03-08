@@ -31,8 +31,7 @@ class Plan(Command):
             try:
                 return self._cli.invoke('list', **kwargs)
             except CommandNotFound as e:
-                print("OOPS GIT PLAN IS BROKEN.")
-                print(e)
+                self._ui.bold("Something went wrong. Please open a Github issue!")
         else:
             self._cli.invoke('add', **kwargs)
 

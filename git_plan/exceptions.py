@@ -14,3 +14,7 @@ class ProjectNotInitialized(Exception):
 
 class CommitAbandoned(Exception):
     """The user abandoned their commit"""
+
+
+class PlanEmpty(Exception):
+    """The commit plan was empty"""
