@@ -11,6 +11,7 @@ from typing import List
 from git_plan.model.commit import Commit, CommitMessage
 from git_plan.model.project import Project
 from git_plan.service.git import GitService
+from git_plan.util.decorators import requires_initialized
 
 
 class PlanService:
@@ -25,14 +26,14 @@ class PlanService:
         self._git_service = git_service
         self._plan_home = plan_home
 
+    @requires_initialized
     def add_commit(self, project: Project):
         """Create a plan in the given directory"""
-        if not project.is_initialized():
-            self._initialize_project(project)
         commit_id = str(int(time.time()))
         commit = self._create_commit(project, commit_id)
         commit.save()
 
+    @requires_initialized
     def edit_commit(self, commit: Commit):
         """Update the plan in the given directory"""
         template = self._get_template(self._edit_template_file) \
@@ -43,7 +44,9 @@ class PlanService:
         commit.message = new_message
         commit.save()
 
-    def delete_commit(self, commit: Commit):
+    @staticmethod
+    @requires_initialized
+    def delete_commit(commit: Commit):
         """Delete the chosen commit"""
         path = commit.path
         if not os.path.exists(path):
@@ -51,20 +54,20 @@ class PlanService:
 
         os.remove(path)
 
-    def has_commits(self, project: Project) -> bool:
+    @staticmethod
+    @requires_initialized
+    def has_commits(project: Project) -> bool:
         """Check if a plan already exists in the given directory"""
-        if not project.is_initialized():
-            self._initialize_project(project)
         return project.has_commits()
 
-    def get_commits(self, project: Project) -> List[Commit]:
+    @staticmethod
+    @requires_initialized
+    def get_commits(project: Project) -> List[Commit]:
         """Print the status of the plan
 
         Raises:
             RuntimeError:   Commit file not found
         """
-        if not project.is_initialized():
-            self._initialize_project(project)
         return Commit.fetch_commits(project)
 
     # Private #############
@@ -112,13 +115,3 @@ class PlanService:
         body = '\n'.join(lines[1:]).strip()
 
         return ''.join([headline, '\n', '\n', body])
-
-    @staticmethod
-    def _initialize_project(project: Project):
-        plan_dir = project.plan_dir
-        if os.path.exists(plan_dir):
-            print("Project already initialized.")
-            return
-
-        os.mkdir(plan_dir)
-
