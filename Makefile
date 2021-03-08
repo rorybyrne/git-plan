@@ -8,6 +8,7 @@ SHARE_DIR=${BASE_DIR}/share/git-plan
 SYSTEMD_DIR=${BASE_DIR}/share/systemd/user
 
 EXEC_FILES=git-plan
+EXEC_FILES+=gp
 SHARE_FILES=PLAN_TEMPLATE
 SHARE_FILES+=EDIT_TEMPLATE
 SERVICE_FILE=gitplan-oracle.service
@@ -25,6 +26,7 @@ install: check-env check-dirs
 	@echo "Installing to $(INSTALL_DIR)"
 	install -d $(INSTALL_DIR)
 	install -m 0755 scripts/* $(INSTALL_DIR)
+	ln -s $(INSTALL_DIR)/git-plan $(INSTALL_DIR)/gp
 	install -d $(SHARE_DIR)
 	install -m 0644 assets/share/* $(SHARE_DIR)
 	#install -d $(SYSTEMD_DIR)
@@ -38,7 +40,6 @@ uninstall:
 	@echo "Deleting executable files..."
 	@test -d $(INSTALL_DIR) && \
 		cd $(INSTALL_DIR) && \
-		(test -e $(EXEC_FILES) || echo "No executable files found") && \
 		rm -f $(EXEC_FILES) && \
 		echo "Done..."
 	@echo "Deleting share files..."

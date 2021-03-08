@@ -8,31 +8,31 @@ import time
 from subprocess import call
 from typing import List
 
+from git_plan.exceptions import PlanEmpty
 from git_plan.model.commit import Commit, CommitMessage
 from git_plan.model.project import Project
 from git_plan.service.git import GitService
+from git_plan.util.decorators import requires_initialized
 
 
 class PlanService:
     """Manage the user's plans"""
 
-    def __init__(self, plan_home: str, commit_template_file: str, git_service: GitService, edit_template_file: str):
-        assert plan_home, "plan_home missing"
+    def __init__(self, commit_template_file: str, edit_template_file: str, git_service: GitService):
         assert edit_template_file, "edit_template_file missing"
         assert commit_template_file, "commit_template_file missing"
-        self._commit_template_file = os.path.join(plan_home, commit_template_file)
-        self._edit_template_file = os.path.join(plan_home, edit_template_file)
+        self._commit_template_file = commit_template_file
+        self._edit_template_file = edit_template_file
         self._git_service = git_service
-        self._plan_home = plan_home
 
+    @requires_initialized
     def add_commit(self, project: Project):
         """Create a plan in the given directory"""
-        if not project.is_initialized():
-            self._initialize_project(project)
         commit_id = str(int(time.time()))
         commit = self._create_commit(project, commit_id)
         commit.save()
 
+    @requires_initialized
     def edit_commit(self, commit: Commit):
         """Update the plan in the given directory"""
         template = self._get_template(self._edit_template_file) \
@@ -43,7 +43,9 @@ class PlanService:
         commit.message = new_message
         commit.save()
 
-    def delete_commit(self, commit: Commit):
+    @staticmethod
+    @requires_initialized
+    def delete_commit(commit: Commit):
         """Delete the chosen commit"""
         path = commit.path
         if not os.path.exists(path):
@@ -51,25 +53,25 @@ class PlanService:
 
         os.remove(path)
 
-    def has_commits(self, project: Project) -> bool:
+    @staticmethod
+    @requires_initialized
+    def has_commits(project: Project) -> bool:
         """Check if a plan already exists in the given directory"""
-        if not project.is_initialized():
-            self._initialize_project(project)
         return project.has_commits()
 
-    def get_commits(self, project: Project) -> List[Commit]:
+    @staticmethod
+    @requires_initialized
+    def get_commits(project: Project) -> List[Commit]:
         """Print the status of the plan
 
         Raises:
             RuntimeError:   Commit file not found
         """
-        if not project.is_initialized():
-            self._initialize_project(project)
         return Commit.fetch_commits(project)
 
     # Private #############
 
-    def _create_commit(self, project: Project, commit_id: str):
+    def _create_commit(self, project: Project, commit_id: str) -> Commit:
         message = self._prompt_user_for_plan()
         if not message or message.headline == '':
             raise RuntimeError("Invalid commit plan. Please include at least a headline.")
@@ -108,17 +110,10 @@ class PlanService:
     @staticmethod
     def _post_process_commit(lines: List[str]):
         lines = [line.strip() for line in lines if not line.startswith('#') or line == '\n']
+        if not lines or len(lines) == 0:
+            raise PlanEmpty()
+
         headline = lines[0].strip()
         body = '\n'.join(lines[1:]).strip()
 
         return ''.join([headline, '\n', '\n', body])
-
-    @staticmethod
-    def _initialize_project(project: Project):
-        plan_dir = project.plan_dir
-        if os.path.exists(plan_dir):
-            print("Project already initialized.")
-            return
-
-        os.mkdir(plan_dir)
-
