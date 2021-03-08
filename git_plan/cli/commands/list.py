@@ -21,22 +21,22 @@ class List(Command):
         super().__init__(**kwargs)
         assert plan_service, "Plan service not injected"
         self._plan_service = plan_service
-        self._ui_service = ui_service
+        self._ui = ui_service
 
     def pre_command(self):
         """Check whether a plan already exists?"""
         pass
 
-    def command(self, short=False, **kwargs):
+    def command(self, long=False, **kwargs):
         """List the planned commits"""
         commits = self._plan_service.get_commits(self._project)
         if len(commits) == 0:
-            print("No commit plans.")
+            self._ui.bold("No commit plans.")
             return
 
         commits = sorted(commits, key=lambda c: c.id)
-        return self._ui_service.render_commits(commits, headline_only=short)
+        return self._ui.render_commits(commits, headline_only=not long)
 
     def register_subparser(self, subparsers: Any):
         parser: ArgumentParser = subparsers.add_parser(List.subcommand, help='List existing commit plans.')
-        parser.add_argument('--short', dest='short', action='store_true')
+        parser.add_argument('--long', dest='long', action='store_true')
