@@ -16,11 +16,10 @@ class Edit(Command):
 
     subcommand = 'edit'
 
-    def __init__(self, plan_service: PlanService, ui_service: UIService, **kwargs):
+    def __init__(self, plan_service: PlanService, **kwargs):
         super().__init__(**kwargs)
         assert plan_service, "Plan service not injected"
         self._plan_service = plan_service
-        self._ui_service = ui_service
 
     def pre_command(self):
         """Perhaps some validation?"""
@@ -30,10 +29,10 @@ class Edit(Command):
         """Create a new commit"""
         commits = self._plan_service.get_commits(self._project)
         if not commits:
-            print("No commits to edit.")
+            self._ui.bold('No commits to edit.')
             return
 
-        chosen_commit = self._ui_service.choose_commit(commits, 'Which plan do you want to edit?')
+        chosen_commit = self._ui.choose_commit(commits, 'Which plan do you want to edit?')
 
         self._plan_service.edit_commit(chosen_commit)
 

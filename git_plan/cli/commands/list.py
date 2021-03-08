@@ -17,11 +17,10 @@ class List(Command):
 
     subcommand = 'list'
 
-    def __init__(self, plan_service: PlanService, ui_service: UIService, **kwargs):
+    def __init__(self, plan_service: PlanService, **kwargs):
         super().__init__(**kwargs)
         assert plan_service, "Plan service not injected"
         self._plan_service = plan_service
-        self._ui = ui_service
 
     def pre_command(self):
         """Check whether a plan already exists?"""

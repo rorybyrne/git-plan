@@ -5,6 +5,7 @@
 from typing import Any
 
 from git_plan.cli.commands.command import Command
+from git_plan.exceptions import PlanEmpty
 from git_plan.service.plan import PlanService
 from git_plan.util.decorators import requires_initialized
 
@@ -26,7 +27,10 @@ class Add(Command):
 
     def command(self, **kwargs):
         """Create a new commit"""
-        self._plan_service.add_commit(self._project)
+        try:
+            self._plan_service.add_commit(self._project)
+        except PlanEmpty:
+            self._ui.bold('Plan empty, abandoning.')
 
     def register_subparser(self, subparsers: Any):
         subparsers.add_parser(Add.subcommand, help='Add a new commit plan.')
