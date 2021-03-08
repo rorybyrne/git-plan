@@ -38,14 +38,12 @@ class Services(containers.DeclarativeContainer):
     )
     plan_service = providers.Singleton(
         PlanService,
-        plan_home=config.app.plan_home,
         commit_template_file=config.app.commit_template_file,
         edit_template_file=config.app.edit_template_file,
         git_service=git_service
     )
     project_service = providers.Singleton(
         ProjectService,
-        plan_home=config.app.plan_home,
         projects_file=config.app.projects_file
     )
     ui_service = providers.Singleton(

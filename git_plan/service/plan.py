@@ -17,14 +17,12 @@ from git_plan.util.decorators import requires_initialized
 class PlanService:
     """Manage the user's plans"""
 
-    def __init__(self, plan_home: str, commit_template_file: str, git_service: GitService, edit_template_file: str):
-        assert plan_home, "plan_home missing"
+    def __init__(self, commit_template_file: str, edit_template_file: str, git_service: GitService):
         assert edit_template_file, "edit_template_file missing"
         assert commit_template_file, "commit_template_file missing"
-        self._commit_template_file = os.path.join(plan_home, commit_template_file)
-        self._edit_template_file = os.path.join(plan_home, edit_template_file)
+        self._commit_template_file = commit_template_file
+        self._edit_template_file = edit_template_file
         self._git_service = git_service
-        self._plan_home = plan_home
 
     @requires_initialized
     def add_commit(self, project: Project):
