@@ -4,11 +4,13 @@
 """
 from typing import Any
 
+import click as click
+
 from git_plan.cli.commands.command import Command
 from git_plan.exceptions import CommandNotFound
 from git_plan.service.plan import PlanService
 from git_plan.util.decorators import requires_initialized
-
+from git_plan import __version__
 
 @requires_initialized
 class Plan(Command):
@@ -25,8 +27,13 @@ class Plan(Command):
         """Check whether a plan already exists?"""
         pass
 
-    def command(self, **kwargs):
+    def command(self, version=False, **kwargs):
         """Plan a commit"""
+
+        if version:
+            click.echo(__version__)
+            return 0
+
         if self._plan_service.has_commits(self._project):
             try:
                 return self._cli.invoke('list', **kwargs)

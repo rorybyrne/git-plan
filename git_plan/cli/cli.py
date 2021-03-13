@@ -19,6 +19,7 @@ class CLI:
         self._parser = argparse.ArgumentParser(prog='git-plan', description='A better workflow for git.')
         self._parser.add_argument('subcommand', type=str, nargs='?', help='The subcommand to run')
         self._parser.add_argument('--long', dest='long', action='store_true')
+        self._parser.add_argument('--version', dest='version', action='store_true')
         subparsers = self._parser.add_subparsers(dest='subcommand')
 
         for command in commands:
