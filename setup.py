@@ -9,7 +9,6 @@ setup(
         'cachetools',
         'rich',
         'inquirer',
-        'click',
-        'version-query'
+        'pygit2'
     ]
 )

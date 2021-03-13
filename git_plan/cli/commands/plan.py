@@ -11,6 +11,8 @@ from git_plan.exceptions import CommandNotFound
 from git_plan.service.plan import PlanService
 from git_plan.util.decorators import requires_initialized
 from git_plan import __version__
+from git_plan.util.version import get_version_from_repo
+
 
 @requires_initialized
 class Plan(Command):
@@ -31,7 +33,7 @@ class Plan(Command):
         """Plan a commit"""
 
         if version:
-            click.echo(__version__)
+            print(get_version_from_repo(self._project.root_dir))
             return 0
 
         if self._plan_service.has_commits(self._project):
