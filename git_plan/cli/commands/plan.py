@@ -4,13 +4,11 @@
 """
 from typing import Any
 
-import click as click
 
 from git_plan.cli.commands.command import Command
 from git_plan.exceptions import CommandNotFound
 from git_plan.service.plan import PlanService
 from git_plan.util.decorators import requires_initialized
-from git_plan import __version__
 from git_plan.util.version import get_version_from_repo
 
 
