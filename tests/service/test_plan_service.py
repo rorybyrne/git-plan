@@ -10,7 +10,7 @@ from git_plan.service.plan import PlanService
 
 def test_should_construct_successfully():
     git_service = GitService()
-    plan_service = PlanService('.', '.', git_service, '.')
+    plan_service = PlanService('.', '.', git_service)
 
     assert plan_service
 
@@ -23,7 +23,7 @@ def test_should_create_commit(mock_get_current_branch, mock_prompt_user):
     mock_get_current_branch.return_value = 'foo_branch'
 
     git_service = GitService()
-    plan_service = PlanService('.', '.', git_service, '.')
+    plan_service = PlanService('.', '.', git_service)
     with tempfile.TemporaryDirectory() as tempdir:
         os.mkdir(os.path.join(tempdir, '.git'))
         project = Project(tempdir)
