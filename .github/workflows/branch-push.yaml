@@ -31,19 +31,19 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ matrix.tox_path }}
-          key: ${{ runner.os }}-${{ runner.python-version }}-tox
+          key: ${{ runner.os }}-${{ matrix.python-version }}-tox
           restore-keys: |
-            ${{ runner.os }}-${{ runner.python-version }}-tox
-            ${{ runner.os }}-${{ runner.python-version }}-
+            ${{ runner.os }}-${{ matrix.python-version }}-tox
+            ${{ runner.os }}-${{ matrix.python-version }}-
             ${{ runner.os }}-
       - name: Cache pip
         uses: actions/cache@v2
         with:
           path: ${{ matrix.pip_path }}
-          key: ${{ runner.os }}-${{ runner.python-version }}-pip
+          key: ${{ runner.os }}-${{ matrix.python-version }}-pip
           restore-keys: |
-            ${{ runner.os }}-${{ runner.python-version }}-pip
-            ${{ runner.os }}-${{ runner.python-version }}-
+            ${{ runner.os }}-${{ matrix.python-version }}-pip
+            ${{ runner.os }}-${{ matrix.python-version }}-
             ${{ runner.os }}-
       - name: Install tox
         run: |
