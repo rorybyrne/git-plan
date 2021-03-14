@@ -36,6 +36,15 @@ jobs:
             ${{ runner.os }}-${{ runner.python-version }}-tox
             ${{ runner.os }}-${{ runner.python-version }}-
             ${{ runner.os }}-
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: ${{ matrix.pip_path }}
+          key: ${{ runner.os }}-${{ runner.python-version }}-pip
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.python-version }}-pip
+            ${{ runner.os }}-${{ runner.python-version }}-
+            ${{ runner.os }}-
       - name: Install tox
         run: |
           python -m pip install --upgrade pip
