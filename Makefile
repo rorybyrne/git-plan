@@ -11,9 +11,10 @@ EXEC_FILES=git-plan
 EXEC_FILES+=gp
 SHARE_FILES=PLAN_TEMPLATE
 SHARE_FILES+=EDIT_TEMPLATE
+SHARE_FILES+=$(VERSION_FILE)
 SERVICE_FILE=gitplan-oracle.service
-VERSION_FILE=git_plan/_version.py
 VERSION!=python setup.py --version
+VERSION_FILE=git_plan/_version.py
 
 check-env:
 ifndef HOME
@@ -65,7 +66,7 @@ version:
 		rm $(VERSION_FILE) && \
 		echo "Removed old version file" || \
 		echo "No version file found"
-	echo "__version__ = '$(VERSION)'" > $(VERSION_FILE)
+	echo $(VERSION) > $(VERSION_FILE)
 
 #observe:
 #	@echo "Starting oracle..."
