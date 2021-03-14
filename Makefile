@@ -62,10 +62,9 @@ reinstall: uninstall install
 version:
 	@echo "Generating version"
 	@test -f $(VERSION_FILE) && \
-	rm $(VERSION_FILE) && \
-	echo "Removed old version file" || \
-	echo "No version file found"
-
+		rm $(VERSION_FILE) && \
+		echo "Removed old version file" || \
+		echo "No version file found"
 	echo "__version__ = '$(VERSION)'" > $(VERSION_FILE)
 
 #observe:
