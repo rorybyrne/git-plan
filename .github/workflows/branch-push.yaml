@@ -4,17 +4,41 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.8', '3.9']
+        include:
+          - python-version: '3.8'
+            tox_path: ./.tox/py38
+          - python-version: '3.9'
+            tox_path: ./.tox/py39
+          - os: ubuntu-latest
+            pip_path: ~/.cache/pip
+          - os: macos-latest
+            pip_path: ~/Library/Caches/pip
+          - os: windows-latest
+            pip_path: ~\AppData\Local\pip\Cache
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Setup Python
-        uses: actions/setup-python@v1
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
         with:
-          python-version: 3.8
-
-      - name: Install Dependancies
+          python-version: ${{ matrix.python-version }}
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Cache tox
+        uses: actions/cache@v2
+        with:
+          path: ${{ matrix.tox_path }}
+          key: ${{ runner.os }}-${{ runner.python-version }}-tox
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.python-version }}-tox
+            ${{ runner.os }}-${{ runner.python-version }}-
+            ${{ runner.os }}-
+      - name: Install tox
         run: |
-          pip install -e .
-          pip install -r requirements.txt
-
-      - run: tox
+          python -m pip install --upgrade pip
+          pip install tox tox-gh-actions
+      - name: Test with tox
+        run: tox
