@@ -131,4 +131,4 @@ dmypy.json
 .wip/
 
 # Version file
-_version.py
+_version

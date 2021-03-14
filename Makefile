@@ -14,7 +14,7 @@ SHARE_FILES+=EDIT_TEMPLATE
 SHARE_FILES+=$(VERSION_FILE)
 SERVICE_FILE=gitplan-oracle.service
 VERSION!=python setup.py --version
-VERSION_FILE=git_plan/_version.py
+VERSION_FILE=git_plan/_version
 
 check-env:
 ifndef HOME
