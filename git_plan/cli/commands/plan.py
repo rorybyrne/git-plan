@@ -4,7 +4,7 @@
 """
 from typing import Any
 
-
+from git_plan import __version__
 from git_plan.cli.commands.command import Command
 from git_plan.exceptions import CommandNotFound
 from git_plan.service.plan import PlanService
@@ -31,7 +31,7 @@ class Plan(Command):
         """Plan a commit"""
 
         if version:
-            print(get_version_from_repo(self._project.root_dir))
+            print(__version__)
             return 0
 
         if self._plan_service.has_commits(self._project):
