@@ -18,3 +18,6 @@ class CommitAbandoned(Exception):
 
 class PlanEmpty(Exception):
     """The commit plan was empty"""
+
+class NotAGitRepository(Exception):
+    """The current project is not a git repository"""

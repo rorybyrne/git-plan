@@ -6,7 +6,6 @@ from typing import Any
 
 from git_plan.cli.commands.command import Command
 from git_plan.service.project import ProjectService
-from git_plan.service.ui import UIService
 
 
 class Init(Command):

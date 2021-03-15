@@ -2,6 +2,7 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
+from git_plan.conf import Settings
 import os
 import sys
 from pathlib import Path
@@ -19,9 +20,11 @@ CONFIG_DIR = os.path.join(HOME, '.local', 'share', 'git-plan')
 
 def main():
     """Entrypoint"""
+    settings = Settings.load()
+
     app = Application()
-    configure(app)
-    app.wire(modules=[sys.modules[__name__]])  # What is this? Who knows, but it works.
+    app.config.from_dict(settings)
+    app.wire(modules=[sys.modules[__name__]])
 
     try:
         args = sys.argv[1:]  # Might be []
@@ -33,21 +36,6 @@ def main():
 @inject
 def launch_cli(args: List[str], cli: CLI = Provide[Application.cli]):
     cli.parse(args)
-
-
-def configure(app: Application):
-    working_dir = os.getcwd()
-    config_file = os.path.join(CONFIG_DIR, 'config.yaml')
-    if not os.path.exists(config_file):
-        raise RuntimeError(f'Config file not found at: "{config_file}"')
-
-    app.config.from_yaml(config_file)
-    plan_home = app.config.app.plan_home().replace('$HOME', HOME)
-    app.config.set('app.plan_home', plan_home)
-    app.config.set('project.working_dir', working_dir)
-    app.config.set('app.edit_template_file', os.path.join(plan_home, app.config.app.edit_template_file()))
-    app.config.set('app.commit_template_file', os.path.join(plan_home, app.config.app.commit_template_file()))
-    app.config.set('app.projects_file', os.path.join(plan_home, app.config.app.projects_file()))
 
 
 if __name__ == "__main__":

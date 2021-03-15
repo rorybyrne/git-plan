@@ -97,16 +97,6 @@ class Commit:
             f.write(json.dumps(commit_dict))
 
     @classmethod
-    def fetch_commits(cls, project: Project) -> List['Commit']:
-        if not project.has_commits():
-            return []
-
-        commit_files = os.listdir(project.plan_dir)
-        commits = [cls.from_file(f, project) for f in commit_files]
-
-        return commits
-
-    @classmethod
     def from_file(cls, filename: str, project: Project):
         """Load a commit from a file"""
         full_path = os.path.join(project.plan_dir, filename)
