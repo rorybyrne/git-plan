@@ -11,7 +11,10 @@ EXEC_FILES=git-plan
 EXEC_FILES+=gp
 SHARE_FILES=PLAN_TEMPLATE
 SHARE_FILES+=EDIT_TEMPLATE
+SHARE_FILES+=$(VERSION_FILE)
 SERVICE_FILE=gitplan-oracle.service
+VERSION!=python setup.py --version
+VERSION_FILE=git_plan/_version
 
 check-env:
 ifndef HOME
@@ -22,7 +25,7 @@ check-dirs:
 	@test -d $(BASE_DIR) || (echo "Missing $(BASE_DIR) directory, which is base directory" && exit 1)
 	@test -d $(INSTALL_DIR) || (echo "Missing the install directory: $(INSTALL_DIR)" && exit 1)
 
-install: check-env check-dirs
+install: version check-env check-dirs
 	@echo "Installing to $(INSTALL_DIR)"
 	install -d $(INSTALL_DIR)
 	install -m 0755 scripts/* $(INSTALL_DIR)
@@ -56,6 +59,14 @@ uninstall:
 #		echo "Could not delete service file."
 
 reinstall: uninstall install
+
+version:
+	@echo "Generating version"
+	@test -f $(VERSION_FILE) && \
+		rm $(VERSION_FILE) && \
+		echo "Removed old version file" || \
+		echo "No version file found"
+	echo $(VERSION) > $(VERSION_FILE)
 
 #observe:
 #	@echo "Starting oracle..."

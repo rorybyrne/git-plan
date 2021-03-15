@@ -4,6 +4,7 @@
 """
 from typing import Any
 
+from git_plan import __version__
 from git_plan.cli.commands.command import Command
 from git_plan.exceptions import CommandNotFound
 from git_plan.service.plan import PlanService
@@ -25,8 +26,13 @@ class Plan(Command):
         """Check whether a plan already exists?"""
         pass
 
-    def command(self, **kwargs):
+    def command(self, version=False, **kwargs):
         """Plan a commit"""
+
+        if version:
+            print(__version__)
+            return 0
+
         if self._plan_service.has_commits(self._project):
             try:
                 return self._cli.invoke('list', **kwargs)
