@@ -55,5 +55,27 @@ A better workflow for git.
     about pre-emptive commit comments.
 </p>
 
-<h2>Contributing</h2>
-<p>Give me a shout - rory@rory.bio or @ryrobyrne</p>
+## Contributing
+
+* Download and try it out
+* Create an [issue](https://github.com/synek/git-plan/issues) if you find a problem or want to discuss something
+* [fork](https://guides.github.com/activities/forking/) the repository, fix a bug or add a feature, and raise a PR
+
+### Development
+
+1. Install the dev requirements `pip install -r requirements_dev.txt`
+2. Install the package in [develop mode](https://pip.pypa.io/en/stable/reference/pip_install/#install-editable) `pip install -e .`
+3. Install the pre-commit hooks `pre-commit install -t pre-commit` and `pre-commit install -t pre-push`
+
+### Hooks
+
+Failure on any of the hooks will prevent the action taking place.
+
+#### Pre-Commit
+
+* [pylint](https://pylint.org/) on changed source files
+* [mypy](http://mypy-lang.org/) on changed source files
+
+#### Pre-Push
+
+* [tox](https://tox.readthedocs.io/en/latest/) test suite runs
