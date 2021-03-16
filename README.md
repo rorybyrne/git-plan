@@ -59,7 +59,7 @@ A better workflow for git.
 
 * Download and try it out
 * Create an [issue](https://github.com/synek/git-plan/issues) if you find a problem or want to discuss something
-* [Fork](https://guides.github.com/activities/forking/) the repository, fix a bug or add a feature, and raise a PR
+* [Fork](https://guides.github.com/activities/forking/) the repository, fix a bug or add a feature, and open a PR
 
 ### Development
 
