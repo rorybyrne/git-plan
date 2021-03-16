@@ -1,11 +1,4 @@
 repos:
-  - repo: https://github.com/pycqa/pylint
-    rev: pylint-2.7.0
-    hooks:
-      - files: ^git_plan/
-        id: pylint
-        stages: [commit]
-        types: [file, python]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.812"
     hooks:
@@ -21,3 +14,10 @@ repos:
         language: system
         pass_filenames: false
         stages: [push]
+      - files: ^git_plan/
+        id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        stages: [commit]
+        types: [file, python]

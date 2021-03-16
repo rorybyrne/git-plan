@@ -1,5 +1,5 @@
-import os
 import tempfile
+from pathlib import Path
 from unittest.mock import patch
 
 from git_plan.model.commit import CommitMessage
@@ -25,7 +25,7 @@ def test_should_create_commit(mock_get_current_branch, mock_prompt_user):
     git_service = GitService()
     plan_service = PlanService('.', '.', git_service)
     with tempfile.TemporaryDirectory() as tempdir:
-        os.mkdir(os.path.join(tempdir, '.git'))
+        Path(tempdir, '.git').mkdir()
         project = Project(tempdir)
 
         commit = plan_service._create_commit(project, 'foo')

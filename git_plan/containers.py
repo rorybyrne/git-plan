@@ -2,6 +2,7 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
+# pylint: disable=no-member
 from dependency_injector import providers, containers
 
 from git_plan.cli.cli import CLI
@@ -89,12 +90,14 @@ class Commands(containers.DeclarativeContainer):
     )
     init_command = providers.Singleton(
         Init,
-        ui_service=services.ui_service,
         project_service=services.project_service,
+        ui_service=services.ui_service,
         project=core.project
     )
     help_command = providers.Singleton(
-        Help
+        Help,
+        ui_service=services.ui_service,
+        project=core.project
     )
 
 

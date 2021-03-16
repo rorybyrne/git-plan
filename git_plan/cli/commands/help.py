@@ -7,17 +7,10 @@ from typing import Any
 from git_plan.cli.commands.command import Command
 
 
-class Help(Command):
+class Help(Command):  # pylint: disable=too-few-public-methods
     """Print the help"""
 
     subcommand = 'help'
-
-    def __init__(self):
-        pass
-
-    def pre_command(self):
-        """Perhaps some validation?"""
-        pass
 
     def command(self, **kwargs):
         """Create a new commit"""

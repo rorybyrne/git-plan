@@ -2,17 +2,24 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
+from pathlib import Path
+
 from git_plan.exceptions import NotAGitRepository
-import os
+
+GIT_DIR = '.git'
 
 
-def get_repository_root(dir: str):
-    """Walks up the directory tree to find the root git dir"""
-    GIT_DIR = '.git'
-    prev, dir = None, os.path.abspath(dir)
-    while prev != dir:
-        if os.path.isdir(os.path.join(dir, GIT_DIR)):
-            return dir
-        prev, dir = dir, os.path.abspath(os.path.join(dir, os.pardir))
+def get_repository_root(directory: Path):
+    """Walks up the directory tree to find the root git dir
+
+    Note:
+        Technically, this will return true on a non-git repository if it has a .git/ directory
+        ...But who would ever do that?
+    """
+    prev, directory = None, Path(directory).resolve()
+    while prev != directory:
+        if (directory / GIT_DIR).exists():
+            return directory.resolve()
+        prev, directory = directory, directory.parent
 
     raise NotAGitRepository()

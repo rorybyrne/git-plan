@@ -2,8 +2,6 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
-from git_plan.conf import Settings
-import os
 import sys
 from pathlib import Path
 from typing import List
@@ -11,11 +9,11 @@ from typing import List
 from dependency_injector.wiring import inject, Provide
 
 from git_plan.cli.cli import CLI
+from git_plan.conf import Settings
 from git_plan.containers import Application
-from git_plan.exceptions import ProjectNotInitialized
+from git_plan.exceptions import ProjectNotInitialized, GitPlanException
 
 HOME = str(Path.home())
-CONFIG_DIR = os.path.join(HOME, '.local', 'share', 'git-plan')
 
 
 def main():
@@ -29,12 +27,17 @@ def main():
     try:
         args = sys.argv[1:]  # Might be []
         launch_cli(args)
-    except ProjectNotInitialized as e:
+    except ProjectNotInitialized:
         print("Git plan is not initialized.\n\tPlease run `git plan init`")
+    except GitPlanException as exc:
+        print("git plan encountered an error.")
+        print("Please open an issue at https://github.com/synek/git-plan and let us know.\n")
+        print(f"The error message was '{str(exc)}'")
 
 
 @inject
 def launch_cli(args: List[str], cli: CLI = Provide[Application.cli]):
+    """Inject dependency tree and run the CLI"""
     cli.parse(args)
 
 

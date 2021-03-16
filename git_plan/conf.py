@@ -2,7 +2,7 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
-import os
+from pathlib import Path
 
 from git_plan import constants
 from git_plan.exceptions import NotAGitRepository
@@ -15,7 +15,7 @@ class Settings(dict):
     Here, user-defined settings like custom templates can be loaded.
     """
 
-    # Builders ####################################################################################    
+    # Builders ####################################################################################
 
     @staticmethod
     def _from_project() -> dict:
@@ -43,8 +43,9 @@ class Settings(dict):
         settings.update(local_settings)  # Roll both into the default settings
 
         try:
-            settings["project_root"] = get_repository_root(os.getcwd())
-        except NotAGitRepository:
-            raise RuntimeError("Not in a git repository")
+            cwd = Path.cwd()
+            settings["project_root"] = get_repository_root(cwd)
+        except NotAGitRepository as exc:
+            raise RuntimeError("Not in a git repository") from exc
 
         return Settings(settings)
