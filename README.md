@@ -65,7 +65,7 @@ A better workflow for git.
 
 1. Install the dev requirements `pip install -r requirements_dev.txt`
 2. Install the package in [develop mode](https://pip.pypa.io/en/stable/reference/pip_install/#install-editable) `pip install -e .`
-3. Install the pre-commit hooks `pre-commit install pre-commit` and `pre-commit install pre-push`
+3. Install the pre-commit hooks `pre-commit install -t pre-commit` and `pre-commit install -t pre-push`
 
 ### Hooks
 
