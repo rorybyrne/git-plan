@@ -13,16 +13,17 @@ from git_plan.model.commit import Commit, CommitMessage
 from git_plan.model.project import Project
 from git_plan.service.git import GitService
 from git_plan.util.decorators import requires_initialized
+from git_plan.util.unix import is_installed
 
 
 class PlanService:
     """Manage the user's plans"""
 
-    def __init__(self, commit_template_file: str, edit_template_file: str, git_service: GitService):
-        assert edit_template_file, "edit_template_file missing"
-        assert commit_template_file, "commit_template_file missing"
-        self._commit_template_file = commit_template_file
-        self._edit_template_file = edit_template_file
+    def __init__(self, plan_template: str, edit_template: str, git_service: GitService):
+        assert edit_template, "Edit template missing"
+        assert plan_template, "Commit template missing"
+        self._plan_template = plan_template
+        self._edit_template = edit_template
         self._git_service = git_service
 
     @requires_initialized
@@ -35,7 +36,7 @@ class PlanService:
     @requires_initialized
     def edit_commit(self, commit: Commit):
         """Update the plan in the given directory"""
-        template = self._get_template(self._edit_template_file) \
+        template = self._edit_template \
             .replace('%headline%', commit.message.headline) \
             .replace('%body%', commit.message.body)
 
@@ -47,27 +48,25 @@ class PlanService:
     @requires_initialized
     def delete_commit(commit: Commit):
         """Delete the chosen commit"""
-        path = commit.path
-        if not os.path.exists(path):
+        if not commit.path.exists():
             raise RuntimeError(f'Commit not found: {commit}')
 
-        os.remove(path)
+        commit.path.unlink()  # Deletes the file
 
     @staticmethod
     @requires_initialized
     def has_commits(project: Project) -> bool:
         """Check if a plan already exists in the given directory"""
-        return project.has_commits()
+        return any(project.plan_dir.iterdir())  # False if it cannot iterate at least once
 
-    @staticmethod
     @requires_initialized
-    def get_commits(project: Project) -> List[Commit]:
+    def get_commits(self, project: Project) -> List[Commit]:
         """Print the status of the plan
 
         Raises:
             RuntimeError:   Commit file not found
         """
-        return Commit.fetch_commits(project)
+        return self._fetch_commits(project)
 
     # Private #############
 
@@ -82,30 +81,32 @@ class PlanService:
         return commit
 
     def _prompt_user_for_plan(self, initial: str = None) -> CommitMessage:
-        editor = os.environ.get('EDITOR', 'vim')
         if not initial:
-            initial = self._get_template(self._commit_template_file)
+            initial = self._plan_template
 
-        with tempfile.NamedTemporaryFile(suffix=".tmp", mode='r+') as tf:
-            tf.write(initial)
-            tf.flush()
-            call([editor, tf.name])
+        editor = os.environ.get('EDITOR', 'vim')
+        if not is_installed(editor):
+            raise RuntimeError("Couldn't find an editor installed on your system.")
 
-            tf.seek(0)
-            message_lines = tf.readlines()
+        with tempfile.NamedTemporaryFile(suffix=".tmp", mode='r+') as file:
+            file.write(initial)
+            file.flush()
+            call([editor, file.name])
+
+            file.seek(0)
+            message_lines = file.readlines()
             processed_input = self._post_process_commit(message_lines)
 
             return CommitMessage.from_string(processed_input)
 
-    @staticmethod
-    def _get_template(file: str):
-        try:
-            with open(file, 'r') as f:
-                template = f.read()
-                return template
-        except FileNotFoundError as e:
-            print(e)
-            return ''
+    def _fetch_commits(self, project: Project) -> List['Commit']:
+        if not self.has_commits(project):
+            return []
+
+        commit_files = project.plan_dir.iterdir()
+        commits = [Commit.from_file(f, project) for f in commit_files]
+
+        return commits
 
     @staticmethod
     def _post_process_commit(lines: List[str]):

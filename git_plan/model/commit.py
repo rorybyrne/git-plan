@@ -3,15 +3,19 @@
 Author: Rory Byrne <rory@rory.bio>
 """
 import json
-import os
 from dataclasses import dataclass, field
-from typing import List
+from pathlib import Path
+from typing import Optional
 
+from git_plan.exceptions import ProjectNotInitialized, GitPlanException
 from git_plan.model.project import Project
+
+COMMIT_FILE_EXT = '.txt'
 
 
 @dataclass
 class CommitMessage:
+    """The message of a commit"""
     headline: str
     body: str
 
@@ -22,54 +26,55 @@ class CommitMessage:
         '''
 
     @classmethod
-    def from_file(cls, path: str):
+    def from_file(cls, path: Path):
         """Load a commit's message from a file"""
         try:
-            with open(path, 'r') as f:
-                commit_data = json.load(f)
+            with open(path, 'r') as file:
+                commit_data = json.load(file)
 
             return CommitMessage(**commit_data['message'])
-        except Exception as e:
-            print(e)
-            raise RuntimeError(f'Failed to load commit from disk: {path}')
+        except Exception as exc:
+            raise GitPlanException(f'Failed to load commit from disk: {path}') from exc
 
     @classmethod
     def from_string(cls, string: str):
+        """Construct a CommitMessage from a well-formatted string"""
         components = string.split('\n\n')
         if len(components) == 2:
             return CommitMessage(components[0], components[1])
-        elif len(components) > 2:
+
+        if len(components) > 2:
             return CommitMessage(components[0], '\n\n'.join(components[1:]))
-        else:
-            raise RuntimeError(f'Could not parse commit message from string: "{string}"')
+
+        raise GitPlanException(f'Could not parse commit message from string: "{string}"')
 
 
 @dataclass
 class Commit:
+    """Represents a planned commit"""
     project: Project
     id: str
     branch: str
-    _message: CommitMessage = field(init=False, default=None)
-
-    EXT = '.txt'
+    _message: Optional[CommitMessage] = field(init=False, default=None)
 
     @property
     def filename(self):
+        """The filename where this plan is stored"""
         return f'commit-{self.id}'
 
     @property
-    def path(self):
-        local_plan_dir = '.git/plan'
-        return os.path.join(self.project.root_dir, local_plan_dir, self.filename + self.EXT)
+    def path(self) -> Path:
+        """The absolute path where this plan is stored"""
+        return Path(self.project.root_dir / '.git' / 'plan' / self.filename).with_suffix(COMMIT_FILE_EXT).resolve()
 
     @property
     def message(self):
+        """Returns the commit message, loading it from disk if needed"""
         if not self._message:
             try:
                 self.message = CommitMessage.from_file(self.path)
-            except RuntimeError as e:
-                print(e)
-                raise RuntimeError(f"Commit doesn't exist at location: {self.path}")
+            except RuntimeError as exc:
+                raise RuntimeError(f"Commit doesn't exist at location: {self.path}") from exc
 
         return self._message
 
@@ -82,8 +87,8 @@ class Commit:
         if not self._message:
             raise RuntimeError("Cannot save a commit with no message.")
 
-        # Create plan/ directory if needed
-        os.makedirs(os.path.dirname(self.path), exist_ok=True)
+        if not self.project.is_initialized():
+            raise ProjectNotInitialized()
 
         commit_dict = {
             "branch": self.branch,
@@ -93,28 +98,17 @@ class Commit:
             },
         }
 
-        with open(self.path, 'w') as f:
-            f.write(json.dumps(commit_dict))
+        with open(self.path, 'w') as file:
+            file.write(json.dumps(commit_dict))
 
     @classmethod
-    def fetch_commits(cls, project: Project) -> List['Commit']:
-        if not project.has_commits():
-            return []
-
-        commit_files = os.listdir(project.plan_dir)
-        commits = [cls.from_file(f, project) for f in commit_files]
-
-        return commits
-
-    @classmethod
-    def from_file(cls, filename: str, project: Project):
+    def from_file(cls, file: Path, project: Project):
         """Load a commit from a file"""
-        full_path = os.path.join(project.plan_dir, filename)
-        with open(full_path, 'r') as f:
-            commit_data = json.load(f)
+        with open(file, 'r') as fp:
+            commit_data = json.load(fp)
 
         commit_message = CommitMessage(**commit_data['message'])
-        commit_id = filename.split('.')[0].split('-')[1]
+        commit_id = file.stem.split('-')[1]
         branch = commit_data['branch']
         commit = Commit(project, commit_id, branch)
         commit.message = commit_message

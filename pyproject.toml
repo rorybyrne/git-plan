@@ -1,2 +1,5 @@
 [tool.pylint.MASTER]
-extension-pkg-whitelist="dependency_injector"
+extension-pkg-whitelist = "dependency_injector"
+generated-members = "dependency_inector.*, subcommand, wire"
+good-names = "id, fp"
+max-line-length = 120

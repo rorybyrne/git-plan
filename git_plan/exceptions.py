@@ -1,20 +1,32 @@
-"""Exceptions
+"""GitPlanExceptions
 
 @author Rory Byrne <rory@rory.bio
 """
 
 
-class CommandNotFound(Exception):
+class GitPlanException(Exception):
+    """Base exception for git plan"""
+
+
+class CommandNotFound(GitPlanException):
     """Command doesn't exist"""
 
 
-class ProjectNotInitialized(Exception):
+class ProjectNotInitialized(GitPlanException):
     """The project was not initialized"""
 
 
-class CommitAbandoned(Exception):
+class ProjectAlreadyInitialized(GitPlanException):
+    """The project is already initialized"""
+
+
+class CommitAbandoned(GitPlanException):
     """The user abandoned their commit"""
 
 
-class PlanEmpty(Exception):
+class PlanEmpty(GitPlanException):
     """The commit plan was empty"""
+
+
+class NotAGitRepository(GitPlanException):
+    """The current project is not a git repository"""

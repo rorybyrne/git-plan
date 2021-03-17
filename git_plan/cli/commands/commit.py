@@ -24,10 +24,6 @@ class Commit(Command):
         self._plan_service = plan_service
         self._git_service = git_service
 
-    def pre_command(self):
-        """Perhaps some validation?"""
-        pass
-
     def command(self, **kwargs):
         """Create a new commit"""
         commits = self._plan_service.get_commits(self._project)
@@ -45,7 +41,6 @@ class Commit(Command):
             self._plan_service.delete_commit(chosen_commit)
         except CommitAbandoned:
             print("Commit abandoned.")
-            pass
 
     def register_subparser(self, subparsers: Any):
         subparsers.add_parser(Commit.subcommand, help='Commit a plan.')

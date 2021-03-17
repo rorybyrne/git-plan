@@ -6,7 +6,6 @@ from typing import Any
 
 from git_plan.cli.commands.command import Command
 from git_plan.service.plan import PlanService
-from git_plan.service.ui import UIService
 from git_plan.util.decorators import requires_initialized
 
 
@@ -20,10 +19,6 @@ class Edit(Command):
         super().__init__(**kwargs)
         assert plan_service, "Plan service not injected"
         self._plan_service = plan_service
-
-    def pre_command(self):
-        """Perhaps some validation?"""
-        pass
 
     def command(self, **kwargs):
         """Create a new commit"""

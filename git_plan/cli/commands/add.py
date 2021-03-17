@@ -21,10 +21,6 @@ class Add(Command):
         assert plan_service, "Plan service not injected"
         self._plan_service = plan_service
 
-    def pre_command(self):
-        """Perhaps some validation?"""
-        pass
-
     def command(self, **kwargs):
         """Create a new commit"""
         try:

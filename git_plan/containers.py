@@ -2,6 +2,7 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
+# pylint: disable=no-member
 from dependency_injector import providers, containers
 
 from git_plan.cli.cli import CLI
@@ -25,7 +26,7 @@ class Core(containers.DeclarativeContainer):
     config = providers.Configuration()
     project = providers.Singleton(
         Project,
-        root_dir=config.project.working_dir
+        root_dir=config.project_root
     )
 
 
@@ -33,22 +34,15 @@ class Services(containers.DeclarativeContainer):
     """Dependency structure for services"""
     config = providers.Configuration()
 
-    git_service = providers.Singleton(
-        GitService
-    )
+    git_service = providers.Singleton(GitService)
     plan_service = providers.Singleton(
         PlanService,
-        commit_template_file=config.app.commit_template_file,
-        edit_template_file=config.app.edit_template_file,
-        git_service=git_service
+        plan_template=config.template.plan,
+        edit_template=config.template.edit,
+        git_service=git_service,
     )
-    project_service = providers.Singleton(
-        ProjectService,
-        projects_file=config.app.projects_file
-    )
-    ui_service = providers.Singleton(
-        UIService
-    )
+    project_service = providers.Singleton(ProjectService)
+    ui_service = providers.Singleton(UIService)
 
 
 class Commands(containers.DeclarativeContainer):
@@ -96,12 +90,14 @@ class Commands(containers.DeclarativeContainer):
     )
     init_command = providers.Singleton(
         Init,
-        ui_service=services.ui_service,
         project_service=services.project_service,
+        ui_service=services.ui_service,
         project=core.project
     )
     help_command = providers.Singleton(
-        Help
+        Help,
+        ui_service=services.ui_service,
+        project=core.project
     )
 
 

@@ -1,0 +1,51 @@
+"""Configuration
+
+Author: Rory Byrne <rory@rory.bio>
+"""
+from pathlib import Path
+
+from git_plan import constants
+from git_plan.exceptions import NotAGitRepository
+from git_plan.util.git import get_repository_root
+
+
+class Settings(dict):
+    """Responsible for loading all settings from disk/defaults before starting the app
+
+    Here, user-defined settings like custom templates can be loaded.
+    """
+
+    # Builders ####################################################################################
+
+    @staticmethod
+    def _from_project() -> dict:
+        """Attempt to load a config.yaml from the local git repository"""
+        return {}
+
+    @staticmethod
+    def _from_local() -> dict:
+        """Attempt to load a config.yaml from a default directory"""
+        return {}
+
+    @staticmethod
+    def _default() -> dict:
+        """Return the default settings"""
+        return constants.DEFAULT_SETTINGS
+
+    @staticmethod
+    def load() -> "Settings":
+        """Load the settings"""
+        settings = Settings._default()
+        local_settings = Settings._from_local()
+        project_settings = Settings._from_project()
+
+        local_settings.update(project_settings)  # Roll project into local settings
+        settings.update(local_settings)  # Roll both into the default settings
+
+        try:
+            cwd = Path.cwd()
+            settings["project_root"] = get_repository_root(cwd)
+        except NotAGitRepository as exc:
+            raise RuntimeError("Not in a git repository") from exc
+
+        return Settings(settings)

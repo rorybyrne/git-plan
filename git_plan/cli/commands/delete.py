@@ -20,10 +20,6 @@ class Delete(Command):
         assert plan_service, "Plan service not injected"
         self._plan_service = plan_service
 
-    def pre_command(self):
-        """Perhaps some validation?"""
-        pass
-
     def command(self, **kwargs):
         """Create a new commit"""
         commits = self._plan_service.get_commits(self._project)
@@ -34,7 +30,7 @@ class Delete(Command):
         chosen_commit = self._ui.choose_commit(commits, 'Which plan do you want to delete?')
 
         self._ui.bold(f'{chosen_commit.message.headline}\n')
-        confirm_msg = f'Are you sure you want to delete this commit?'
+        confirm_msg = 'Are you sure you want to delete this commit?'
         if not self._ui.confirm(confirm_msg):
             self._ui.bold("Stopped.")
             return

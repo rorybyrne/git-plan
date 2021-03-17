@@ -3,42 +3,42 @@
 @author Rory Byrne <rory@rory.bio>
 """
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Optional, List, Any
+from typing import TYPE_CHECKING, Optional, Any
 
 from git_plan.model.project import Project
 from git_plan.service.ui import UIService
 
 if TYPE_CHECKING:
     from git_plan.cli.cli import CLI
+else:
+    CLI = Any
 
 
 class Command(ABC):
+    """Base for all Commands"""
 
-    subcommand: str = None
+    subcommand: str
 
-    def __init__(self, project: Project = None, ui_service: UIService = None, *args, **kwargs):
-        assert project, "Project missing."
-        assert ui_service, "UI service missing"
+    def __init__(self, project: Project, ui_service: UIService):
         self._cli: Optional[CLI] = None
         self._project = project
         self._ui = ui_service
 
     def run(self, context: dict):
-        self.pre_command()
+        """Run the command"""
         self.command(**context)
 
     def set_cli(self, cli: 'CLI'):
+        """Set the CLI reference, so that a command can trigger other commands"""
         assert cli, "Cannot set CLI: None"
         self._cli = cli
 
     @abstractmethod
     def register_subparser(self, subparsers: Any):
-        raise NotImplementedError()
-
-    @abstractmethod
-    def pre_command(self):
+        """Allows a command to define its own args"""
         raise NotImplementedError()
 
     @abstractmethod
     def command(self, **kwargs):
+        """The implementation of the command's functionality"""
         raise NotImplementedError()
