@@ -9,7 +9,6 @@ SYSTEMD_DIR=${BASE_DIR}/share/systemd/user
 
 EXEC_FILES=git-plan
 EXEC_FILES+=gp
-VERSION!=python setup.py --version
 VERSION_FILE=git_plan/_version
 
 check-env:
@@ -56,10 +55,13 @@ uninstall: clean_bin clean_share
 
 reinstall: uninstall install
 
-version:
+version: has-pip
 	@echo "Generating version"
 	@test -f $(VERSION_FILE) && \
 		rm $(VERSION_FILE) && \
 		echo "Removed old version file" || \
 		echo "No version file found"
-	echo $(VERSION) > $(VERSION_FILE)
+	echo $$(python setup.py --version) > $(VERSION_FILE)
+
+has-pip:
+	@python -m pip --version || (echo "Please ensure pip is installed." && exit 1)
