@@ -8,10 +8,8 @@ from git_plan import __version__
 from git_plan.cli.commands.command import Command
 from git_plan.exceptions import CommandNotFound, GitPlanException
 from git_plan.service.plan import PlanService
-from git_plan.util.decorators import requires_initialized
 
 
-@requires_initialized
 class Plan(Command):
     """Create or update a plan."""
 
