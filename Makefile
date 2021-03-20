@@ -9,7 +9,6 @@ SYSTEMD_DIR=${BASE_DIR}/share/systemd/user
 
 EXEC_FILES=git-plan
 EXEC_FILES+=gp
-VERSION!=python setup.py --version
 VERSION_FILE=git_plan/_version
 
 check-env:
@@ -21,7 +20,7 @@ check-dirs:
 	@test -d $(BASE_DIR) || (echo "Missing $(BASE_DIR) directory, which is base directory" && exit 1)
 	@test -d $(INSTALL_DIR) || (echo "Missing the install directory: $(INSTALL_DIR)" && exit 1)
 
-install: version check-env check-dirs
+install: check-python check-env check-dirs version
 	@echo "Installing to $(INSTALL_DIR)"
 	@( \
 		install -d $(INSTALL_DIR) && \
@@ -56,10 +55,17 @@ uninstall: clean_bin clean_share
 
 reinstall: uninstall install
 
-version:
+check-python:
+	@$(BASE_PYTHON) --version || exit 1
+	@$(BASE_PYTHON) -c "import sys; sys.exit(1) if sys.version_info < (3, 7) else None" || (echo "Please install python >= 3.7" && exit 1)
+
+version: has-pip
 	@echo "Generating version"
 	@test -f $(VERSION_FILE) && \
 		rm $(VERSION_FILE) && \
 		echo "Removed old version file" || \
 		echo "No version file found"
-	echo $(VERSION) > $(VERSION_FILE)
+	echo $$($(BASE_PYTHON) setup.py --version) > $(VERSION_FILE)
+
+has-pip:
+	@$(BASE_PYTHON) -m pip --version || (echo "Please ensure pip is installed." && exit 1)
