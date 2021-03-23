@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
-from git_plan.exceptions import ProjectNotInitialized, GitPlanException
+from git_plan.exceptions import GitPlanException, ProjectNotInitialized
 from git_plan.model.project import Project
 
 COMMIT_FILE_EXT = '.txt'
@@ -91,10 +91,10 @@ class Commit:
             raise ProjectNotInitialized()
 
         commit_dict = {
-            "branch": self.branch,
+            "branch": self.branch.strip(),
             'message': {
-                "headline": self.message.headline,
-                "body": self.message.body
+                "headline": self.message.headline.strip(),
+                "body": self.message.body.strip()
             },
         }
 

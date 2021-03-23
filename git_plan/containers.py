@@ -3,7 +3,7 @@
 @author Rory Byrne <rory@rory.bio>
 """
 # pylint: disable=no-member
-from dependency_injector import providers, containers
+from dependency_injector import containers, providers
 
 from git_plan.cli.cli import CLI
 from git_plan.cli.commands.add import Add
@@ -61,6 +61,7 @@ class Commands(containers.DeclarativeContainer):
         List,
         plan_service=services.plan_service,
         ui_service=services.ui_service,
+        git_service=services.git_service,
         project=core.project
     )
     add_command = providers.Singleton(

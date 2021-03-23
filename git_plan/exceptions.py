@@ -27,6 +27,9 @@ class CommitAbandoned(GitPlanException):
 class PlanEmpty(GitPlanException):
     """The commit plan was empty"""
 
+class GitException(GitPlanException):
+    """Base class for git-related exceptions"""
 
-class NotAGitRepository(GitPlanException):
+
+class NotAGitRepository(GitException):
     """The current project is not a git repository"""

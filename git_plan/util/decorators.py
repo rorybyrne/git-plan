@@ -3,14 +3,12 @@
 Author: Rory Byrne <rory@rory.bio>
 """
 from functools import wraps
-from typing import Callable, Union, Type
+from typing import Callable, Type, Union
 
 from git_plan.cli.commands.command import Command
 from git_plan.exceptions import ProjectNotInitialized
 from git_plan.model.commit import Commit
 from git_plan.model.project import Project
-
-CanCheckInitialized = Union[Project, Commit]
 
 
 def requires_initialized(ref: Union[Type[Command], Callable]):
@@ -39,7 +37,7 @@ def requires_initialized(ref: Union[Type[Command], Callable]):
 
         if is_initialized:
             return ref(*args, **kwargs)
-        else:
-            raise ProjectNotInitialized()
+
+        raise ProjectNotInitialized()
 
     return wrapper

@@ -5,19 +5,21 @@ Author: Rory Byrne <rory@rory.bio>
 from typing import List
 
 import inquirer
-from rich import print
+from rich import print as rich_print
 
 from git_plan.model.commit import Commit
 
 
 class UIService:
+    """Functionality for rendering in the terminal"""
 
     @staticmethod
     def choose_commit(commits: List[Commit], message: str):
         """Choose from a set of tasks"""
         if len(commits) == 0:
             raise RuntimeError("Cannot choose from an empty list of commits.")
-        elif len(commits) == 1:
+
+        if len(commits) == 1:
             return commits[0]
 
         options = [
@@ -34,6 +36,7 @@ class UIService:
 
     @staticmethod
     def confirm(message: str) -> bool:
+        """Ask the user for confirmation"""
         key = 'confirm'
         questions = [inquirer.Confirm(key, message=message)]
 
@@ -41,9 +44,14 @@ class UIService:
 
         return answers[key]
 
+    def bold(self, message: str):
+        """Print a bolded message"""
+        self.print(f'[bold]{message}[/bold]')
+
     @staticmethod
-    def bold(message: str):
-        print(f'[bold]{message}[/bold]')
+    def print(message: str):
+        """Print a message to the terminal"""
+        rich_print(message)
 
     def render_commits(self, commits: List[Commit], headline_only=True):
         """Renders a list of commits in pretty print"""
@@ -52,13 +60,12 @@ class UIService:
             if idx < len(commits) - 1:
                 print('')
 
-    @staticmethod
-    def _render_commit(commit: Commit, tag: str, headline_only):
+    def _render_commit(self, commit: Commit, tag: str, headline_only):
         if headline_only:
-            print(f'[bold][{tag}][/bold] {commit.message.headline}')
+            self.print(f'[bold][{tag}][/bold] {commit.message.headline}')
         else:
-            print(f'[bold][[magenta]{tag}[/magenta]][/bold] on {commit.branch}\n')
-            print(f'    {commit.message.headline}\n')
+            self.print(f'[bold][[magenta]{tag}[/magenta]][/bold] on {commit.branch}\n')
+            self.print(f'    {commit.message.headline}\n')
             body_lines = commit.message.body.split('\n')
             for line in body_lines:
-                print(f'    {line}')
+                self.print(f'    {line}')

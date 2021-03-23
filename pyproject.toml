@@ -1,5 +1,8 @@
 [tool.pylint.MASTER]
 extension-pkg-whitelist = "dependency_injector"
 generated-members = "dependency_inector.*, subcommand, wire"
-good-names = "id, fp"
+good-names = "id, fp, e"
 max-line-length = 120
+
+[tool.isort]
+known_first_party = ['git_plan']
