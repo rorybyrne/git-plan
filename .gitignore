@@ -132,3 +132,4 @@ dmypy.json
 
 # Version file
 _version
+.tags

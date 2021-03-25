@@ -60,13 +60,13 @@ class PlanService:
         return any(project.plan_dir.iterdir())  # False if it cannot iterate at least once
 
     @requires_initialized
-    def get_commits(self, project: Project) -> List[Commit]:
+    def get_commits(self, project: Project, branch: str = None) -> List[Commit]:
         """Print the status of the plan
 
         Raises:
             RuntimeError:   Commit file not found
         """
-        return self._fetch_commits(project)
+        return self._fetch_commits(project, branch=branch)
 
     # Private #############
 
@@ -99,12 +99,15 @@ class PlanService:
 
             return CommitMessage.from_string(processed_input)
 
-    def _fetch_commits(self, project: Project) -> List['Commit']:
+    def _fetch_commits(self, project: Project, branch: str = None) -> List['Commit']:
         if not self.has_commits(project):
             return []
 
         commit_files = project.plan_dir.iterdir()
-        commits = [Commit.from_file(f, project) for f in commit_files]
+        commits: List[Commit] = [Commit.from_file(f, project) for f in commit_files]
+        if branch:
+            # .strip() for backawrds compatibility
+            commits = [commit for commit in commits if commit.branch.strip() == branch]
 
         return commits
 
