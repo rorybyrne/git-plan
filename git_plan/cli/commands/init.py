@@ -27,7 +27,7 @@ class Init(Command):
 
         try:
             self._project_service.initialize(self._project)
-            self._ui.bold("Initialized git plan.")
+            self._ui.print(f"Initialized git plan in [bold]{self._project.plan_dir}[/bold]")
         except ProjectAlreadyInitialized:
             self._ui.bold("Git plan is already initialized.")
 

@@ -65,7 +65,7 @@ class Commit:
     @property
     def path(self) -> Path:
         """The absolute path where this plan is stored"""
-        return Path(self.project.root_dir / '.git' / 'plan' / self.filename).with_suffix(COMMIT_FILE_EXT).resolve()
+        return Path(self.project.plan_files_dir / self.filename).with_suffix(COMMIT_FILE_EXT).resolve()
 
     @property
     def message(self):
