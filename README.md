@@ -1,15 +1,13 @@
-<h1 align="center">git plan</h1>
 <p align="center">
-  <img src="https://github.com/synek/git-plan/workflows/Full%20Tests/badge.svg">
+  <img src="https://user-images.githubusercontent.com/9436784/110315084-a7e39f80-8000-11eb-8a14-3799c7e2cfd3.png">
 </p>
 <p align="center">
 A better workflow for git.
 </p>
-
+<hr></hr>
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/9436784/110315084-a7e39f80-8000-11eb-8a14-3799c7e2cfd3.png">
+  <img src="https://github.com/synek/git-plan/workflows/Full%20Tests/badge.svg">
 </p>
-
 <p>
     Git plan inverts the git workflow so that you can write your commit message first, before you start writing code. 
     This makes it easier to plan your work and stay on-track.
