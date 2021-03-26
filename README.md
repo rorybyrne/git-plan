@@ -2,7 +2,7 @@
   <img src="https://user-images.githubusercontent.com/9436784/110315084-a7e39f80-8000-11eb-8a14-3799c7e2cfd3.png">
 </p>
 <p align="center">
-A better workflow for git.
+  <b>A better workflow for git.</b>
 </p>
 <hr></hr>
 <p align="center">
