@@ -27,11 +27,12 @@ class PlanService:
         self._git_service = git_service
 
     @requires_initialized
-    def add_commit(self, project: Project):
+    def add_commit(self, project: Project) -> Commit:
         """Create a plan in the given directory"""
         commit_id = str(int(time.time()))
         commit = self._create_commit(project, commit_id)
         commit.save()
+        return commit
 
     @requires_initialized
     def edit_commit(self, commit: Commit):
@@ -57,7 +58,7 @@ class PlanService:
     @requires_initialized
     def has_commits(project: Project) -> bool:
         """Check if a plan already exists in the given directory"""
-        return any(project.plan_dir.iterdir())  # False if it cannot iterate at least once
+        return any(project.plan_files_dir.iterdir())  # False if it cannot iterate at least once
 
     @requires_initialized
     def get_commits(self, project: Project, branch: str = None) -> List[Commit]:
@@ -103,8 +104,8 @@ class PlanService:
         if not self.has_commits(project):
             return []
 
-        commit_files = project.plan_dir.iterdir()
-        commits: List[Commit] = [Commit.from_file(f, project) for f in commit_files]
+        commit_files = project.plan_files_dir.iterdir()
+        commits: List[Commit] = [Commit.from_file(f, project) for f in commit_files if f.is_file()]
         if branch:
             # .strip() for backawrds compatibility
             commits = [commit for commit in commits if commit.branch.strip() == branch]
