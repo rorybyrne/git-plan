@@ -2,8 +2,10 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
+import datetime as dt
 from typing import List
 
+import humanize
 import inquirer
 from rich import print as rich_print
 
@@ -61,10 +63,14 @@ class UIService:
                 print('')
 
     def _render_commit(self, commit: Commit, tag: str, headline_only):
+        if not commit.updated_at:
+            raise ValueError("Invalid commit: no updated_at field found.")
+
+        time_display = f"[dim]({humanize.naturaltime(dt.datetime.fromtimestamp(commit.updated_at))})[/dim]"
         if headline_only:
-            self.print(f'[bold][{tag}][/bold] {commit.message.headline}')
+            self.print(f'[bold][{tag}][/bold] {commit.message.headline} {time_display}')
         else:
-            self.print(f'[bold][[magenta]{tag}[/magenta]][/bold] on {commit.branch}\n')
+            self.print(f'[bold][[magenta]{tag}[/magenta]][/bold] on {commit.branch} {time_display}\n')
             self.print(f'    {commit.message.headline}\n')
             body_lines = commit.message.body.split('\n')
             for line in body_lines:
