@@ -1,5 +1,7 @@
-name: Full Tests
-on: [push, pull_request]
+name: PyPi Publish
+on:
+  release:
+    types: published
 
 jobs:
   test:
@@ -57,4 +59,4 @@ jobs:
       	run: |
           poetry build
           poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN  }}
-          poetry publish --dry-run
+          poetry publish
