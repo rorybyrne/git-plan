@@ -27,14 +27,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Cache tox
-        uses: actions/cache@v2
-        with:
-          path: ${{ matrix.tox_path }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
+      # - name: Cache tox
+        # uses: actions/cache@v2
+        # with:
+          # path: ${{ matrix.tox_path }}
+          # key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
+          # restore-keys: |
+            # ${{ runner.os }}-pip-
+            # ${{ runner.os }}-
       - name: Install tox
         run: |
           python -m pip install --upgrade pip
