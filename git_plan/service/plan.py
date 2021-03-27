@@ -43,6 +43,7 @@ class PlanService:
 
         new_message = self._prompt_user_for_plan(initial=template)
         commit.message = new_message
+        commit.updated_at = int(time.time())
         commit.save()
 
     @staticmethod
@@ -77,7 +78,9 @@ class PlanService:
             raise RuntimeError("Invalid commit plan. Please include at least a headline.")
 
         branch = self._git_service.get_current_branch()
-        commit = Commit(project, commit_id, branch)
+        created_at: float = time.time()
+        updated_at: float = created_at
+        commit = Commit(project, commit_id, branch, int(created_at), int(updated_at))
         commit.message = message
         return commit
 
