@@ -33,8 +33,7 @@ jobs:
           path: ${{ matrix.tox_path }}
           key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.python-version }}-tox
-            ${{ runner.os }}-${{ matrix.python-version }}-
+            ${{ runner.os }}-pip-
             ${{ runner.os }}-
       - name: Install tox
         run: |
