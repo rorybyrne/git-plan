@@ -41,9 +41,9 @@ To use the tool, run `git plan init` (or simply `gp <command>`) to initialize, a
 ### Development
 
 * Clone: `git clone https://github.com/synek/git-plan && cd git-plan`
-* Optionally create a virtualenv: `python -m venv .venv && source .venv/bin/activate`
-* Install: `poetry install`
-* Check: `git plan --version` or `gp --version`
+* Create a virtualenv: `python -m venv .venv && source .venv/bin/activate`
+* Install: `poetry install`  (installs in the virtualenv)
+* Check: `git plan --version` or `gp --version`  (must be run from within the virtualenv)
 * Run tests: `tox`
 * Install pre-commit hooks: `poetry run pre-commit install`
 
