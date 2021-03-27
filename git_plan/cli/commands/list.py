@@ -35,7 +35,11 @@ class List(Command):
         commits = self._plan_service.get_commits(self._project, branch=branch)
 
         if len(commits) == 0:
-            self._ui.bold("No commit plans.")
+            if branch:
+                self._ui.bold("No commit plans on the current branch.")
+            else:
+                self._ui.bold("No commit plans.")
+
             return
 
         commits = sorted(commits, key=lambda c: c.id)
@@ -45,3 +49,4 @@ class List(Command):
         parser: ArgumentParser = subparsers.add_parser(List.subcommand, help='List existing commit plans.')
         parser.add_argument('-l', '--long', dest='long', action='store_true')
         parser.add_argument('-b', '--branch', dest='branch', help="Filter plans for a specific branch")
+        parser.add_argument('-a', '--all', dest='branch', action="store_const", const="all", help="Show all plans")
