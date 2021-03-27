@@ -52,7 +52,7 @@ jobs:
       	with:
           virtualenvs-create: false
       - name: Install Dependencies
-      	run: poetry install
+        run: poetry install
       - name: Build and publish
       	run: |
           poetry build
