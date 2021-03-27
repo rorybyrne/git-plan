@@ -3,6 +3,7 @@
 Author: Rory Byrne <rory@rory.bio>
 """
 import json
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
@@ -55,6 +56,8 @@ class Commit:
     project: Project
     id: str
     branch: str
+    created_at: int
+    updated_at: int
     _message: Optional[CommitMessage] = field(init=False, default=None)
 
     @property
@@ -90,19 +93,27 @@ class Commit:
         if not self.project.is_initialized():
             raise ProjectNotInitialized()
 
+        if not self.created_at:
+            raise ValueError("Missing created_at")
+
+        if not self.created_at:
+            raise ValueError("Missing updated_at")
+
         commit_dict = {
             "branch": self.branch.strip(),
             'message': {
                 "headline": self.message.headline.strip(),
                 "body": self.message.body.strip()
             },
+            "created_at": self.created_at,
+            "updated_at": self.updated_at
         }
 
         with open(self.path, 'w') as file:
             file.write(json.dumps(commit_dict))
 
     @classmethod
-    def from_file(cls, file: Path, project: Project):
+    def from_file(cls, file: Path, project: Project) -> "Commit":
         """Load a commit from a file"""
         with open(file, 'r') as fp:
             commit_data = json.load(fp)
@@ -110,7 +121,16 @@ class Commit:
         commit_message = CommitMessage(**commit_data['message'])
         commit_id = file.stem.split('-')[1]
         branch = commit_data['branch']
-        commit = Commit(project, commit_id, branch)
+        created_at = commit_data.get('created_at', time.time())
+        updated_at = commit_data.get('updated_at', created_at)
+
+        commit = Commit(
+            project,
+            commit_id,
+            branch,
+            int(created_at),
+            int(updated_at)
+        )
         commit.message = commit_message
 
         return commit

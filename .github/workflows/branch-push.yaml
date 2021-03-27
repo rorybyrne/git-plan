@@ -31,11 +31,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ matrix.tox_path }}
-          key: ${{ runner.os }}-${{ matrix.python-version }}-tox
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.python-version }}-tox
-            ${{ runner.os }}-${{ matrix.python-version }}-
-            ${{ runner.os }}-
+          key: ${{ runner.os }}-${{ matrix.python-version }}-tox-${{ hashFiles('setup.py') }}
       - name: Install tox
         run: |
           python -m pip install --upgrade pip
