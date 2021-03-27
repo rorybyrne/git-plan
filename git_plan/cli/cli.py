@@ -5,7 +5,6 @@ from typing import Dict, List
 
 import pkg_resources
 
-from git_plan import __version__
 from git_plan.cli.commands.command import Command
 from git_plan.exceptions import CommandNotFound
 from git_plan.model.project import Project
@@ -91,9 +90,6 @@ class CLI:
 
     def _parse_args(self, args: List[str]) -> Namespace:
         """Main entrypoint for parsing arguments.
-
-        If no subcommand is given, choose between "list" and "add" based on whether or not
-            the user already has plans saved.
 
         Args:
             args:   The commandline args to parse
