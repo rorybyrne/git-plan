@@ -3,6 +3,8 @@ import argparse
 from argparse import Namespace
 from typing import Dict, List
 
+import pkg_resources
+
 from git_plan import __version__
 from git_plan.cli.commands.command import Command
 from git_plan.exceptions import CommandNotFound
@@ -36,6 +38,15 @@ class CLI:
             args:   Command-line arguments
         """
         parsed_args = self._parse_args(args)
+        if parsed_args.version:
+            self.version()
+            return
+
+        if not parsed_args.subcommand:
+            if self._plan_service.has_commits(self._project):
+                parsed_args.subcommand = "list"
+            else:
+                parsed_args.subcommand = "add"
 
         try:
             self.invoke(**vars(parsed_args))  # Convert to dict
@@ -68,6 +79,12 @@ class CLI:
 
         return command
 
+    @staticmethod
+    def version():
+        """Print the version"""
+        version = pkg_resources.require('git_plan')[0]
+        print(version)
+
     def help(self):
         """Print the help"""
         self._parser.print_help()
@@ -82,10 +99,5 @@ class CLI:
             args:   The commandline args to parse
         """
         parsed_args = self._parser.parse_args(args)
-        if not parsed_args.subcommand:
-            if self._plan_service.has_commits(self._project):
-                parsed_args.subcommand = "list"
-            else:
-                parsed_args.subcommand = "add"
 
         return parsed_args

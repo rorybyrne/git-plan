@@ -1,3 +1,34 @@
+[tool.poetry]
+name = "git-plan"
+version = "0.1.0"
+description = "A better personal workflow for git"
+authors = ["Rory Byrne <rory@rory.bio>"]
+license = "MIT"
+
+[tool.poetry.scripts]
+git-plan = 'git_plan.__cli__:main'
+gp = 'git_plan.__cli__:main'
+
+[tool.poetry.dependencies]
+python = "^3.8"
+dependency-injector = {version = "^4.31.1", extras = ["yaml"]}
+cachetools = "^4.2.1"
+rich = "^9.13.0"
+inquirer = "^2.7.0"
+humanize = "^3.3.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.2"
+coverage = "^5.5"
+pre-commit = "^2.11.1"
+tox = "^3.23.0"
+mypy = "^0.812"
+pylint = "^2.7.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.pylint.MASTER]
 extension-pkg-whitelist = "dependency_injector"
 generated-members = "dependency_inector.*, subcommand, wire"

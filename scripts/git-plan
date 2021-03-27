@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-
-"$HOME"/.local/share/git-plan/venv/bin/python -m git_plan.__cli__ "$@"
