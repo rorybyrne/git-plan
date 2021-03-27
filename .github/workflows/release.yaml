@@ -55,8 +55,10 @@ jobs:
           virtualenvs-create: false
       - name: Install Dependencies
         run: poetry install
-      - name: Build and publish
-        run: |
-          poetry build
-          poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN  }}
-          poetry publish
+      - name: Configure PyPi token
+        run: poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN  }}
+      - name: Build
+        run: poetry build
+      - name: Publish
+        run: poetry publish
+
