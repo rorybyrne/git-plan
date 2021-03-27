@@ -41,7 +41,7 @@
   <li><code>git plan</code> - plan your first commit, or list existing plans</li>
   <li><code>git plan --version</code> - print the version</li>
   <li><code>git plan --help</code> - print the help</li>
-  <li><code>git plan list [--long]</code> - list existing plans</li>
+  <li><code>git plan list [-l/--long] [-a/--all]</code> - list existing plans</li>
   <li><code>git plan add</code> - plan a new commit</li>
   <li><code>git plan edit</code> - edit an existing plan</li>
   <li><code>git plan delete</code> - delete an existing plan</li>
