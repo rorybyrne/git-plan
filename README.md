@@ -15,7 +15,7 @@ This tool is in *alpha* stage. If anything breaks, please open an issue.
 
 ## Installation
 
-`git plan` is not yet available for general installation. To install it from source (i.e. for development), see the development installation instructions below.
+`pip install git-plan`
 
 ## Usage
 To use the tool, run `git plan init` (or simply `gp <command>`) to initialize, and then `git plan add` to plan a new commit. When you are ready to make a `commit` to git, use `git plan commit` to use the plan as a template for your commit message.
