@@ -58,4 +58,4 @@ Failure on any of the hooks will prevent the action taking place.
 * [tox](https://tox.readthedocs.io/en/latest/) test suite runs
 
 ## Background
-Here is an interesting [blog post]("https://arialdomartini.wordpress.com/2012/09/03/pre-emptive-commit-comments/) about pre-emptive commit comments.
+Here is an interesting [blog post](https://arialdomartini.wordpress.com/2012/09/03/pre-emptive-commit-comments/) about pre-emptive commit comments.
