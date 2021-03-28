@@ -2,6 +2,8 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
+import sys
+
 from pathlib import Path
 
 from git_plan import constants
@@ -45,7 +47,8 @@ class Settings(dict):
         try:
             cwd = Path.cwd()
             settings["project_root"] = get_repository_root(cwd)
-        except NotAGitRepository as exc:
-            raise RuntimeError("Not in a git repository") from exc
+        except NotAGitRepository:
+            print("fatal: not a git repository (or any of the parent directories): .git")
+            sys.exit()
 
         return Settings(settings)
