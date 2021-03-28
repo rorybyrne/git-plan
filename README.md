@@ -8,73 +8,54 @@
 <p align="center">
   <img src="https://github.com/synek/git-plan/workflows/Full%20Tests/badge.svg">
 </p>
-<p>
-    Git plan inverts the git workflow so that you can write your commit message first, before you start writing code. 
-    This makes it easier to plan your work and stay on-track.
-</p>
-<p>
-    To use the tool, run <code>git plan init</code> (or simply <code>gp [command]</code>) to initialize, and then 
-    <code>git plan add</code> to plan a new commit. Then when you have finished writing the code, use 
-    <code>git plan commit</code> to use the plan as a template for your commit message.
-</p>
-<p>
-    <b>This tool is in <b>early alpha</b> stage, so be careful and please make an issue or let me know if anything breaks.</b>
-</p>
 
-<h2>Installation</h2>
-<p><code>python3.8</code> is required for now.</p>
-<ol>
-    <li><code>git clone https://github.com/synek/git-plan</code></li>
-    <li><code>cd git-plan</code></li>
-    <li><code>make install</code></li>
-</ol>
-<p>
-    If you have trouble with the install, check what the <code>Makefile</code> is doing. Get in touch with me if you need help.
-</p>
-<p>
-    To uninstall, run <code>make uninstall</code>
-</p>
+Git plan allows you to write your commit messages in-advance, before you start coding. Then you can use those planned-commits as a template for your commit message when you are ready to commit your work. This makes it easier to plan your work and stay on-track.
 
-<h2>Usage</h2>
-<ul>
-  <li><code>git plan init</code> - initialize git plan in the <code>.plan/</code> directory</li>
-  <li><code>git plan</code> - plan your first commit, or list existing plans</li>
-  <li><code>git plan --version</code> - print the version</li>
-  <li><code>git plan --help</code> - print the help</li>
-  <li><code>git plan list [-l/--long] [-a/--all]</code> - list existing plans</li>
-  <li><code>git plan add</code> - plan a new commit</li>
-  <li><code>git plan edit</code> - edit an existing plan</li>
-  <li><code>git plan delete</code> - delete an existing plan</li>
-  <li><code>git plan commit</code> - commit one of your plans (launches <code>git commit -t <YOUR_PLAN></code> with your plan as a template)</li>
-</ul>
+This tool is in *alpha* stage. If anything breaks, please open an issue.
 
-<h2>Background</h2>
-<p>
-    Here is an interesting <a href="https://arialdomartini.wordpress.com/2012/09/03/pre-emptive-commit-comments/">blog post</a>
-    about pre-emptive commit comments.
-</p>
+## Installation
+
+`git plan` is not yet available for general installation. To install it from source (i.e. for development), see the development installation instructions below.
+
+## Usage
+To use the tool, run `git plan init` (or simply `gp <command>`) to initialize, and then `git plan add` to plan a new commit. When you are ready to make a `commit` to git, use `git plan commit` to use the plan as a template for your commit message.
+
+* `git plan init` - initialize git plan in the `.plan/` directory
+* `git plan` - create a new plan, or list existing plans
+* `git plan --version` - print version info
+* `git plan --help` - print help
+* `git plan list [-l/--long] [-a/--all]` - list existing plans
+* `git plan add` - plan a new commit
+* `git plan edit` - edit an existing plan
+* `git plan delete` - delete a plan
+* `git plan commit` - commit your work, choosing a plan as your commit message template
 
 ## Contributing
 
-* Download and try it out
-* Create an [issue](https://github.com/synek/git-plan/issues) if you find a problem or want to discuss something
+* Download the tool and try it out
+* Create an [issue](https://github.com/synek/git-plan/issues) if you find a bug
+* Open a [discussion topic](https://github.com/synek/git-plan/discussions) if you have a suggestion or question
 * [Fork](https://guides.github.com/activities/forking/) the repository, fix a bug or add a feature, and open a PR
+* If you'd like making a contribution please ask and we can help you.
 
 ### Development
 
-1. Install the dev requirements `pip install -r requirements_dev.txt`
-2. Install the package in [develop mode](https://pip.pypa.io/en/stable/reference/pip_install/#install-editable) `pip install -e .`
-3. Install the pre-commit hooks `pre-commit install -t pre-commit` and `pre-commit install -t pre-push`
+* Clone: `git clone https://github.com/synek/git-plan && cd git-plan`
+* Create a virtualenv: `python -m venv .venv && source .venv/bin/activate`
+* Install: `poetry install`  (installs in the virtualenv)
+* Check: `git plan --version` or `gp --version`  (must be run from within the virtualenv)
+* Run tests: `tox`
+* Install pre-commit hooks: `poetry run pre-commit install`
 
-### Hooks
+You the minimum support Python version is `3.8` but there is an [open issue](https://github.com/synek/git-plan/issues/73) to support `3.6`.
+
+### Pre-Commit hooks
 
 Failure on any of the hooks will prevent the action taking place.
 
-#### Pre-Commit
-
 * [pylint](https://pylint.org/) on changed source files
 * [mypy](http://mypy-lang.org/) on changed source files
-
-#### Pre-Push
-
 * [tox](https://tox.readthedocs.io/en/latest/) test suite runs
+
+## Background
+Here is an interesting [blog post]("https://arialdomartini.wordpress.com/2012/09/03/pre-emptive-commit-comments/) about pre-emptive commit comments.

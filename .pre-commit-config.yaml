@@ -1,23 +1,23 @@
 repos:
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v0.812"
-    hooks:
-      - files: ^git_plan/
-        id: mypy
-        stages: [commit]
-        types: [file, python]
   - repo: local
     hooks:
       - id: tox
         name: tox
-        entry: tox
+        entry: poetry run tox
         language: system
         pass_filenames: false
-        stages: [push]
+        stages: [commit]
       - files: ^git_plan/
         id: pylint
         name: pylint
-        entry: pylint
+        entry: poetry run pylint
+        language: system
+        stages: [commit]
+        types: [file, python]
+      - files: ^git_plan/
+        id: mypy
+        name: mypy
+        entry: poetry run mypy
         language: system
         stages: [commit]
         types: [file, python]
