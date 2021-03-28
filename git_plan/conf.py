@@ -2,12 +2,9 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
-import sys
-
 from pathlib import Path
 
 from git_plan import constants
-from git_plan.exceptions import NotAGitRepository
 from git_plan.util.git import get_repository_root
 
 
@@ -44,11 +41,7 @@ class Settings(dict):
         local_settings.update(project_settings)  # Roll project into local settings
         settings.update(local_settings)  # Roll both into the default settings
 
-        try:
-            cwd = Path.cwd()
-            settings["project_root"] = get_repository_root(cwd)
-        except NotAGitRepository:
-            print("fatal: not a git repository (or any of the parent directories): .git")
-            sys.exit()
+        cwd = Path.cwd()
+        settings["project_root"] = get_repository_root(cwd)
 
         return Settings(settings)
