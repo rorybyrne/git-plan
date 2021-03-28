@@ -5,7 +5,6 @@ Author: Rory Byrne <rory@rory.bio>
 from pathlib import Path
 
 from git_plan import constants
-from git_plan.exceptions import NotAGitRepository
 from git_plan.util.git import get_repository_root
 
 
@@ -42,10 +41,7 @@ class Settings(dict):
         local_settings.update(project_settings)  # Roll project into local settings
         settings.update(local_settings)  # Roll both into the default settings
 
-        try:
-            cwd = Path.cwd()
-            settings["project_root"] = get_repository_root(cwd)
-        except NotAGitRepository as exc:
-            raise RuntimeError("Not in a git repository") from exc
+        cwd = Path.cwd()
+        settings["project_root"] = get_repository_root(cwd)
 
         return Settings(settings)
