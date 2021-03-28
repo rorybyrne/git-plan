@@ -30,7 +30,7 @@ def main():
     except ProjectNotInitialized:
         print("Git plan is not initialized.\n\tPlease run `git plan init`")
     except NotAGitRepository:
-        print("fatal: not a git repository (or any of the parent directories): .git")
+        print("You are not in a git repository (no .git/ directory found).")
     except GitPlanException as exc:
         print("git plan encountered an error.")
         print("Please open an issue at https://github.com/synek/git-plan and let us know.\n")
