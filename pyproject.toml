@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "git-plan"
-version = "0.2.1"
+version = "0.2.2"
 description = "A better personal workflow for git"
 authors = ["Rory Byrne <rory@rory.bio>"]
 license = "MIT"
