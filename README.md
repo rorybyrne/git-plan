@@ -57,5 +57,9 @@ Failure on any of the hooks will prevent the action taking place.
 * [mypy](http://mypy-lang.org/) on changed source files
 * [tox](https://tox.readthedocs.io/en/latest/) test suite runs
 
-## Background
-Here is an interesting [blog post](https://arialdomartini.wordpress.com/2012/09/03/pre-emptive-commit-comments/) about pre-emptive commit comments.
+## Background and Future Work
+Here is an interesting [blog post](https://arialdomartini.wordpress.com/2012/09/03/pre-emptive-commit-comments/) about pre-emptive commit comments, and [another](https://rory.bio/posts/git-plan) about this project itself.
+
+The next step for `git plan` is to add support for importing plans from Github and Linear. There is a gap between "project planning" tools like Linear, and "project building" tools like git. I'd like to close that gap.
+
+After that, I would like to make it less painful to context-switch while writing code. `git plan` will be able to context-switch with you, and automatically stage your changes for you when you want to commit your work.
