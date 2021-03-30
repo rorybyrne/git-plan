@@ -15,6 +15,7 @@ class GitService:
     COMMIT = 'git commit -e -m'
     HAS_STAGED = 'git diff --staged --quiet'
     GET_BRANCH = 'git branch --show-current'
+    CONFIGURED_GIT_EDITOR = 'git config --global core.editor'
 
     def __init__(self):
         pass
@@ -51,6 +52,17 @@ class GitService:
             return branch.strip()
         except subprocess.CalledProcessError as e:
             raise GitException('Failed to get current git branch') from e
+
+
+    def get_configured_editor(self) -> Optional[str]:
+        """Gets the editor configured for git"""
+        cmd = self.CONFIGURED_GIT_EDITOR.split(' ')
+
+        try:
+            editor = self._run_command(cmd)
+            return editor.strip() if editor else None
+        except subprocess.CalledProcessError:
+            return None
 
     @staticmethod
     def _run_command(cmd: List[str], capture_output: bool = True) -> Optional[str]:

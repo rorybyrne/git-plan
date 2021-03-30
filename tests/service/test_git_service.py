@@ -36,3 +36,16 @@ class TestGitService:
         with pytest.raises(CommitAbandoned):
             git.commit(commit)
 
+    @patch('git_plan.service.git.GitService._run_command')
+    def test_get_configured_editor_should_return_none_on_failure(self, run_mock: MagicMock):
+        run_mock.side_effect = CalledProcessError(1, 'foo')
+        git = GitService()
+
+        assert git.get_configured_editor() == None
+
+    @patch('git_plan.service.git.GitService._run_command')
+    def test_get_configured_editor_should_return_none_on_empty_response(self, run_mock: MagicMock):
+        run_mock.return_value = ""
+        git = GitService()
+
+        assert git.get_configured_editor() == None

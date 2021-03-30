@@ -88,7 +88,9 @@ class PlanService:
         if not initial:
             initial = self._plan_template
 
-        editor = os.environ.get('EDITOR', 'vim')
+        editor = self._git_service.get_configured_editor()
+        if not editor:
+            editor = os.environ.get("EDITOR", "vim")
         if not is_installed(editor):
             raise RuntimeError("Couldn't find an editor installed on your system.")
 
