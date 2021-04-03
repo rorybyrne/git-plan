@@ -23,16 +23,16 @@ class List(Command):
         self._plan_service = plan_service
         self._git = git_service
 
-    def command(self, *, long: bool = False, branch: str = None, **kwargs):  # pylint: disable=arguments-differ
+    def command(self, *, long: bool = False, branch: bool = None, **kwargs):  # pylint: disable=arguments-differ
         """List the planned commits"""
-        if not branch:
-            branch = self._git.get_current_branch()
-        elif branch == "all":
-            branch = None
+        if branch:
+            filter_branch = self._git.get_current_branch()
+        else:
+            filter_branch = None
 
-        branch_display = branch if branch else "all branches"
+        branch_display = filter_branch if filter_branch else "all branches"
         self._ui.print(f"Plans for [bold]{branch_display}[/bold]\n")
-        commits = self._plan_service.get_commits(self._project, branch=branch)
+        commits = self._plan_service.get_commits(self._project, branch=filter_branch)
 
         if len(commits) == 0:
             if branch:
@@ -48,5 +48,10 @@ class List(Command):
     def register_subparser(self, subparsers: Any):
         parser: ArgumentParser = subparsers.add_parser(List.subcommand, help='List existing commit plans.')
         parser.add_argument('-l', '--long', dest='long', action='store_true')
-        parser.add_argument('-b', '--branch', dest='branch', help="Filter plans for a specific branch")
-        parser.add_argument('-a', '--all', dest='branch', action="store_const", const="all", help="Show all plans")
+        parser.add_argument(
+            '-b',
+            '--branch',
+            dest='branch',
+            action='store_true',
+            help='Show plans for the current branch'
+        )
