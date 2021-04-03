@@ -65,8 +65,8 @@ class GitService:
             return None
 
     @staticmethod
-    def _run_command(cmd: List[str], capture_output: bool = True) -> Optional[str]:
-        result = subprocess.run(cmd, capture_output=capture_output, check=True)
+    def _run_command(cmd: List[str], capture_output = True) -> Optional[str]:
+        result = subprocess.run(cmd, stdout=subprocess.PIPE if capture_output else None, check=True)
         if result.stdout:
             return result.stdout.decode()
 

@@ -10,12 +10,13 @@ git-plan = 'git_plan.__cli__:main'
 gp = 'git_plan.__cli__:main'
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.6.1"
 dependency-injector = {version = "^4.31.1", extras = ["yaml"]}
 cachetools = "^4.2.1"
 rich = "^9.13.0"
 inquirer = "^2.7.0"
 humanize = "^3.3.0"
+dataclasses = { version="^0.8", python="^3.6, <3.7" }
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.2"
