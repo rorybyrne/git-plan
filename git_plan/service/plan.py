@@ -10,9 +10,8 @@ from typing import List
 
 from git_plan.exceptions import PlanEmpty
 from git_plan.model.commit import Commit, CommitMessage
-from git_plan.model.project import Project
+from git_plan.model.repository import Repository
 from git_plan.service.git import GitService
-from git_plan.util.decorators import requires_initialized
 from git_plan.util.unix import is_installed
 
 
@@ -26,15 +25,13 @@ class PlanService:
         self._edit_template = edit_template
         self._git_service = git_service
 
-    @requires_initialized
-    def add_commit(self, project: Project) -> Commit:
+    def add_commit(self, repository: Repository) -> Commit:
         """Create a plan in the given directory"""
         commit_id = str(int(time.time()))
-        commit = self._create_commit(project, commit_id)
+        commit = self._create_commit(repository, commit_id)
         commit.save()
         return commit
 
-    @requires_initialized
     def edit_commit(self, commit: Commit):
         """Update the plan in the given directory"""
         template = self._edit_template \
@@ -47,7 +44,6 @@ class PlanService:
         commit.save()
 
     @staticmethod
-    @requires_initialized
     def delete_commit(commit: Commit):
         """Delete the chosen commit"""
         if not commit.path.exists():
@@ -56,23 +52,21 @@ class PlanService:
         commit.path.unlink()  # Deletes the file
 
     @staticmethod
-    @requires_initialized
-    def has_commits(project: Project) -> bool:
+    def has_commits(repository: Repository) -> bool:
         """Check if a plan already exists in the given directory"""
-        return any(project.plan_files_dir.iterdir())  # False if it cannot iterate at least once
+        return any(repository.plan_files_dir.iterdir())  # False if it cannot iterate at least once
 
-    @requires_initialized
-    def get_commits(self, project: Project, branch: str = None) -> List[Commit]:
+    def get_commits(self, repository: Repository, branch: str = None) -> List[Commit]:
         """Print the status of the plan
 
         Raises:
             RuntimeError:   Commit file not found
         """
-        return self._fetch_commits(project, branch=branch)
+        return self._fetch_commits(repository, branch=branch)
 
     # Private #############
 
-    def _create_commit(self, project: Project, commit_id: str) -> Commit:
+    def _create_commit(self, repository: Repository, commit_id: str) -> Commit:
         message = self._prompt_user_for_plan()
         if not message or message.headline == '':
             raise RuntimeError("Invalid commit plan. Please include at least a headline.")
@@ -80,7 +74,7 @@ class PlanService:
         branch = self._git_service.get_current_branch()
         created_at: float = time.time()
         updated_at: float = created_at
-        commit = Commit(project, commit_id, branch, int(created_at), int(updated_at))
+        commit = Commit(repository, commit_id, branch, int(created_at), int(updated_at))
         commit.message = message
         return commit
 
@@ -105,12 +99,12 @@ class PlanService:
 
             return CommitMessage.from_string(processed_input)
 
-    def _fetch_commits(self, project: Project, branch: str = None) -> List['Commit']:
-        if not self.has_commits(project):
+    def _fetch_commits(self, repository: Repository, branch: str = None) -> List['Commit']:
+        if not self.has_commits(repository):
             return []
 
-        commit_files = project.plan_files_dir.iterdir()
-        commits: List[Commit] = [Commit.from_file(f, project) for f in commit_files if f.is_file()]
+        commit_files = repository.plan_files_dir.iterdir()
+        commits: List[Commit] = [Commit.from_file(f, repository) for f in commit_files if f.is_file()]
         if branch:
             # .strip() for backawrds compatibility
             commits = [commit for commit in commits if commit.branch.strip() == branch]

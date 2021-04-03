@@ -6,10 +6,11 @@ from typing import Any
 
 from git_plan.cli.commands.command import Command
 from git_plan.service.plan import PlanService
-from git_plan.util.decorators import requires_initialized
+from git_plan.util.decorators import requires_initialized, requires_git_repository
 
 
 @requires_initialized
+@requires_git_repository
 class Delete(Command):
     """Delete an existing commit"""
 
@@ -22,7 +23,7 @@ class Delete(Command):
 
     def command(self, **kwargs):
         """Create a new commit"""
-        commits = self._plan_service.get_commits(self._project)
+        commits = self._plan_service.get_commits(self._repository)
         if not commits:
             self._ui.bold('No commits found.')
             return

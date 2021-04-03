@@ -11,23 +11,24 @@ from dependency_injector.wiring import inject, Provide
 from git_plan.cli.cli import CLI
 from git_plan.conf import Settings
 from git_plan.containers import Application
-from git_plan.exceptions import NotAGitRepository, ProjectNotInitialized, GitPlanException
+from git_plan.exceptions import NotAGitRepository, NotInitialized, GitPlanException
 
 HOME = str(Path.home())
 
 
 def main():
     """Entrypoint"""
+    settings = Settings.load()
+
+    app = Application()
+    app.config.from_dict(settings)
+    app.wire(modules=[sys.modules[__name__]])
+
+    args = sys.argv[1:]  # Might be []
+
     try:
-        settings = Settings.load()
-
-        app = Application()
-        app.config.from_dict(settings)
-        app.wire(modules=[sys.modules[__name__]])
-
-        args = sys.argv[1:]  # Might be []
         launch_cli(args)
-    except ProjectNotInitialized:
+    except NotInitialized:
         print("Git plan is not initialized.\n\tPlease run `git plan init`")
     except NotAGitRepository:
         print("You are not in a git repository (no .git/ directory found).")

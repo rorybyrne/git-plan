@@ -6,12 +6,14 @@ from argparse import ArgumentParser
 from typing import Any
 
 from git_plan.cli.commands.command import Command
+from git_plan.exceptions import NotAGitRepository
 from git_plan.service.git import GitService
 from git_plan.service.plan import PlanService
-from git_plan.util.decorators import requires_initialized
+from git_plan.util.decorators import requires_initialized, requires_git_repository
 
 
 @requires_initialized
+@requires_git_repository
 class List(Command):
     """List commits."""
 
@@ -25,6 +27,9 @@ class List(Command):
 
     def command(self, *, long: bool = False, branch: bool = None, **kwargs):  # pylint: disable=arguments-differ
         """List the planned commits"""
+        if not self._repository:
+            raise NotAGitRepository()
+
         if branch:
             filter_branch = self._git.get_current_branch()
         else:
@@ -32,7 +37,7 @@ class List(Command):
 
         branch_display = filter_branch if filter_branch else "all branches"
         self._ui.print(f"Plans for [bold]{branch_display}[/bold]\n")
-        commits = self._plan_service.get_commits(self._project, branch=filter_branch)
+        commits = self._plan_service.get_commits(self._repository, branch=branch)
 
         if len(commits) == 0:
             if branch:
