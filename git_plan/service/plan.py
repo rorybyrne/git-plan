@@ -9,7 +9,7 @@ from subprocess import call
 from typing import List
 
 from git_plan.exceptions import PlanEmpty
-from git_plan.model.commit import Commit, CommitMessage
+from git_plan.model.plan import Plan, PlanMessage
 from git_plan.model.repository import Repository
 from git_plan.service.git import GitService
 from git_plan.util.unix import is_installed
@@ -20,65 +20,65 @@ class PlanService:
 
     def __init__(self, plan_template: str, edit_template: str, git_service: GitService):
         assert edit_template, "Edit template missing"
-        assert plan_template, "Commit template missing"
+        assert plan_template, "Plan template missing"
         self._plan_template = plan_template
         self._edit_template = edit_template
         self._git_service = git_service
 
-    def add_commit(self, repository: Repository) -> Commit:
+    def add_plan(self, repository: Repository) -> Plan:
         """Create a plan in the given directory"""
-        commit_id = str(int(time.time()))
-        commit = self._create_commit(repository, commit_id)
-        commit.save()
-        return commit
+        plan_id = str(int(time.time()))
+        plan = self._create_plan(repository, plan_id)
+        plan.save()
+        return plan
 
-    def edit_commit(self, commit: Commit):
+    def edit_plan(self, plan: Plan):
         """Update the plan in the given directory"""
         template = self._edit_template \
-            .replace('%headline%', commit.message.headline) \
-            .replace('%body%', commit.message.body)
+            .replace('%headline%', plan.message.headline) \
+            .replace('%body%', plan.message.body)
 
         new_message = self._prompt_user_for_plan(initial=template)
-        commit.message = new_message
-        commit.updated_at = int(time.time())
-        commit.save()
+        plan.message = new_message
+        plan.updated_at = int(time.time())
+        plan.save()
 
     @staticmethod
-    def delete_commit(commit: Commit):
-        """Delete the chosen commit"""
-        if not commit.path.exists():
-            raise RuntimeError(f'Commit not found: {commit}')
+    def delete_plan(plan: Plan):
+        """Delete the chosen plan"""
+        if not plan.path.exists():
+            raise RuntimeError(f'Plan not found: {plan}')
 
-        commit.path.unlink()  # Deletes the file
+        plan.path.unlink()  # Deletes the file
 
     @staticmethod
-    def has_commits(repository: Repository) -> bool:
+    def has_plans(repository: Repository) -> bool:
         """Check if a plan already exists in the given directory"""
         return any(repository.plan_files_dir.iterdir())  # False if it cannot iterate at least once
 
-    def get_commits(self, repository: Repository, branch: str = None) -> List[Commit]:
+    def get_plans(self, repository: Repository, branch: str = None) -> List[Plan]:
         """Print the status of the plan
 
         Raises:
-            RuntimeError:   Commit file not found
+            RuntimeError:   Plan file not found
         """
-        return self._fetch_commits(repository, branch=branch)
+        return self._fetch_plans(repository, branch=branch)
 
     # Private #############
 
-    def _create_commit(self, repository: Repository, commit_id: str) -> Commit:
+    def _create_plan(self, repository: Repository, plan_id: str) -> Plan:
         message = self._prompt_user_for_plan()
         if not message or message.headline == '':
-            raise RuntimeError("Invalid commit plan. Please include at least a headline.")
+            raise RuntimeError("Invalid plan. Please include at least a headline.")
 
         branch = self._git_service.get_current_branch()
         created_at: float = time.time()
         updated_at: float = created_at
-        commit = Commit(repository, commit_id, branch, int(created_at), int(updated_at))
-        commit.message = message
-        return commit
+        plan = Plan(repository, plan_id, branch, int(created_at), int(updated_at))
+        plan.message = message
+        return plan
 
-    def _prompt_user_for_plan(self, initial: str = None) -> CommitMessage:
+    def _prompt_user_for_plan(self, initial: str = None) -> PlanMessage:
         if not initial:
             initial = self._plan_template
 
@@ -95,24 +95,24 @@ class PlanService:
 
             file.seek(0)
             message_lines = file.readlines()
-            processed_input = self._post_process_commit(message_lines)
+            processed_input = self._post_process_plan(message_lines)
 
-            return CommitMessage.from_string(processed_input)
+            return PlanMessage.from_string(processed_input)
 
-    def _fetch_commits(self, repository: Repository, branch: str = None) -> List['Commit']:
-        if not self.has_commits(repository):
+    def _fetch_plans(self, repository: Repository, branch: str = None) -> List['Plan']:
+        if not self.has_plans(repository):
             return []
 
-        commit_files = repository.plan_files_dir.iterdir()
-        commits: List[Commit] = [Commit.from_file(f, repository) for f in commit_files if f.is_file()]
+        plan_files = repository.plan_files_dir.iterdir()
+        plans: List[Plan] = [Plan.from_file(f, repository) for f in plan_files if f.is_file()]
         if branch:
             # .strip() for backawrds compatibility
-            commits = [commit for commit in commits if commit.branch.strip() == branch]
+            plans = [plan for plan in plans if plan.branch.strip() == branch.strip()]
 
-        return commits
+        return plans
 
     @staticmethod
-    def _post_process_commit(lines: List[str]):
+    def _post_process_plan(lines: List[str]):
         lines = [line.strip() for line in lines if not line.startswith('#') or line == '\n']
         if not lines or len(lines) == 0:
             raise PlanEmpty()

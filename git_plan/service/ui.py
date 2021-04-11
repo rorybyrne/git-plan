@@ -9,32 +9,32 @@ import humanize
 import inquirer
 from rich import print as rich_print
 
-from git_plan.model.commit import Commit
+from git_plan.model.plan import Plan
 
 
 class UIService:
     """Functionality for rendering in the terminal"""
 
     @staticmethod
-    def choose_commit(commits: List[Commit], message: str):
+    def choose_plan(plans: List[Plan], message: str):
         """Choose from a set of tasks"""
-        if len(commits) == 0:
-            raise RuntimeError("Cannot choose from an empty list of commits.")
+        if len(plans) == 0:
+            raise RuntimeError("Cannot choose from an empty list of plans.")
 
-        if len(commits) == 1:
-            return commits[0]
+        if len(plans) == 1:
+            return plans[0]
 
         options = [
             inquirer.List(
-                'commit',
+                'plan',
                 message=message,
-                choices=[(c.message.headline, c) for c in commits]
+                choices=[(c.message.headline, c) for c in plans]
             )
         ]
 
         answer = inquirer.prompt(options)
 
-        return answer['commit']
+        return answer['plan']
 
     @staticmethod
     def confirm(message: str) -> bool:
@@ -55,23 +55,23 @@ class UIService:
         """Print a message to the terminal"""
         rich_print(message)
 
-    def render_commits(self, commits: List[Commit], headline_only=True):
-        """Renders a list of commits in pretty print"""
-        for idx, commit in enumerate(commits):
-            self._render_commit(commit, str(idx + 1), headline_only)
-            if idx < len(commits) - 1:
+    def render_plans(self, plans: List[Plan], headline_only=True):
+        """Renders a list of plans in pretty print"""
+        for idx, plan in enumerate(plans):
+            self._render_plan(plan, str(idx + 1), headline_only)
+            if idx < len(plans) - 1:
                 print('')
 
-    def _render_commit(self, commit: Commit, tag: str, headline_only):
-        if not commit.updated_at:
-            raise ValueError("Invalid commit: no updated_at field found.")
+    def _render_plan(self, plan: Plan, tag: str, headline_only):
+        if not plan.updated_at:
+            raise ValueError("Invalid plan: no updated_at field found.")
 
-        time_display = f"[dim]({humanize.naturaltime(dt.datetime.fromtimestamp(commit.updated_at))})[/dim]"
+        time_display = f"[dim]({humanize.naturaltime(dt.datetime.fromtimestamp(plan.updated_at))})[/dim]"
         if headline_only:
-            self.print(f'[bold][{tag}][/bold] {commit.message.headline} {time_display}')
+            self.print(f'[bold][{tag}][/bold] {plan.message.headline} {time_display}')
         else:
-            self.print(f'[bold][[magenta]{tag}[/magenta]][/bold] on {commit.branch} {time_display}\n')
-            self.print(f'    {commit.message.headline}\n')
-            body_lines = commit.message.body.split('\n')
+            self.print(f'[bold][[magenta]{tag}[/magenta]][/bold] on {plan.branch} {time_display}\n')
+            self.print(f'    {plan.message.headline}\n')
+            body_lines = plan.message.body.split('\n')
             for line in body_lines:
                 self.print(f'    {line}')
