@@ -47,7 +47,7 @@ To use the tool, run `git plan init` (or simply `gp <command>`) to initialize, a
 * Run tests: `tox`
 * Install pre-commit hooks: `poetry run pre-commit install`
 
-You the minimum support Python version is `3.8` but there is an [open issue](https://github.com/synek/git-plan/issues/73) to support `3.6`.
+The minimum requirement is `python3.6`.
 
 ### Pre-Commit hooks
 

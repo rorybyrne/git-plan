@@ -22,15 +22,20 @@ def requires_initialized(ref: Union[Type[Command], Callable]):
             return instance
 
         # Find the project or commit argument
-        if project := kwargs.get('project'):
+        if kwargs.get('project'):
+            project = kwargs.get('project')
             is_initialized = project.is_initialized()
-        elif commit := kwargs.get('commit'):
+        elif kwargs.get('commit'):
+            commit = kwargs.get('commit')
             is_initialized = commit.project.is_initialized()
-        elif project := next((arg for arg in args if isinstance(arg, Project)), None):
+        elif next((arg for arg in args if isinstance(arg, Project)), None):
+            project = next((arg for arg in args if isinstance(arg, Project)), None)
             is_initialized = project.is_initialized()
-        elif commit := next((arg for arg in args if isinstance(arg, Commit)), None):
+        elif next((arg for arg in args if isinstance(arg, Commit)), None):
+            commit = next((arg for arg in args if isinstance(arg, Commit)), None)
             is_initialized = commit.project.is_initialized()
-        elif hasattr(ref, '__self__') and (project := getattr(ref.__self__, '_project', None)):  # command.run()
+        elif hasattr(ref, '__self__') and (getattr(ref.__self__, '_project', None)):  # command.run()
+            project = getattr(ref.__self__, '_project', None)
             is_initialized = project.is_initialized()
         else:
             raise RuntimeError('Cannot check for initialized project due to invalid parameters on the function')
