@@ -24,7 +24,7 @@ To use the tool, run `git plan init` (or simply `gp <command>`) to initialize, a
 * `git plan` - create a new plan, or list existing plans
 * `git plan --version` - print version info
 * `git plan --help` - print help
-* `git plan list [-l/--long] [-a/--all]` - list existing plans
+* `git plan list [-l/--long] [-b/--branch]` - list existing plans
 * `git plan add` - plan a new commit
 * `git plan edit` - edit an existing plan
 * `git plan delete` - delete a plan
