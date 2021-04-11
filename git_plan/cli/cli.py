@@ -42,7 +42,7 @@ class CLI:
             return
 
         if not parsed_args.subcommand:
-            if self._plan_service.has_commits(self._repository):
+            if self._plan_service.has_plans(self._repository):
                 parsed_args.subcommand = "list"
             else:
                 parsed_args.subcommand = "add"

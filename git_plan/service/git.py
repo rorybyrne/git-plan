@@ -6,7 +6,7 @@ import subprocess
 from typing import Optional
 
 from git_plan.exceptions import CommitAbandoned, GitException
-from git_plan.model.commit import Commit
+from git_plan.model.plan import Plan
 from git_plan.util import unix
 from git_plan.util.decorators import requires_git_repository
 
@@ -23,10 +23,10 @@ class GitService:
         pass
 
     @requires_git_repository
-    def commit(self, commit: Commit):
-        """Runs git commit with the given commit-plan as a template"""
+    def commit(self, plan: Plan):
+        """Runs git commit with the given plan as a template"""
         cmd = self.COMMIT.split(' ')
-        cmd.append(str(commit.message))
+        cmd.append(str(plan.message))
 
         try:
             unix.run_command(cmd, capture_output=False)

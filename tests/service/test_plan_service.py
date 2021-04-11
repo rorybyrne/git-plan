@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 
 from git_plan.exceptions import NotInitialized
-from git_plan.model.commit import Commit, CommitMessage
+from git_plan.model.plan import Plan, PlanMessage
 from git_plan.model.repository import Repository
 from git_plan.service.git import GitService
 from git_plan.service.plan import PlanService
@@ -20,9 +20,9 @@ def test_should_construct_successfully():
 
 @patch('git_plan.service.plan.PlanService._prompt_user_for_plan')
 @patch.object(GitService, 'get_current_branch')
-def test_add_commit_should_raise_not_initialized(mock_get_current_branch, mock_prompt_user):
+def test_add_plan_should_raise_not_initialized(mock_get_current_branch, mock_prompt_user):
 
-    mock_prompt_user.return_value = CommitMessage('headline', 'body')
+    mock_prompt_user.return_value = PlanMessage('headline', 'body')
     mock_get_current_branch.return_value = 'foo_branch'
 
     git_service = GitService()
@@ -32,12 +32,12 @@ def test_add_commit_should_raise_not_initialized(mock_get_current_branch, mock_p
         project = Repository(tempdir)
 
         with pytest.raises(NotInitialized):
-            commit = plan_service.add_commit(project)
+            plan_service.add_plan(project)
 
 @patch('git_plan.service.plan.PlanService._prompt_user_for_plan')
 @patch.object(GitService, 'get_current_branch')
-def test_should_create_commit(mock_get_current_branch, mock_prompt_user):
-    mock_prompt_user.return_value = CommitMessage('headline', 'body')
+def test_should_create_plan(mock_get_current_branch, mock_prompt_user):
+    mock_prompt_user.return_value = PlanMessage('headline', 'body')
     mock_get_current_branch.return_value = 'foo_branch'
 
     git_service = GitService()
@@ -48,14 +48,14 @@ def test_should_create_commit(mock_get_current_branch, mock_prompt_user):
         Path(tempdir, '.plan', 'plans').mkdir()
         project = Repository(tempdir)
 
-        commit = plan_service.add_commit(project)
-        assert commit.message.headline == 'headline'
-        assert Path(commit.path).is_file()
+        plan = plan_service.add_plan(project)
+        assert plan.message.headline == 'headline'
+        assert Path(plan.path).is_file()
 
 @patch('git_plan.service.plan.PlanService._prompt_user_for_plan')
 @patch.object(GitService, 'get_current_branch')
 def test_deleting_nonexistent_plan_raises_exception(mock_get_current_branch, mock_prompt_user):
-    mock_prompt_user.return_value = CommitMessage('headline', 'body')
+    mock_prompt_user.return_value = PlanMessage('headline', 'body')
     mock_get_current_branch.return_value = 'foo_branch'
 
     git_service = GitService()
@@ -66,6 +66,6 @@ def test_deleting_nonexistent_plan_raises_exception(mock_get_current_branch, moc
         Path(tempdir, '.plan', 'plans').mkdir()
         project = Repository(tempdir)
 
-        commit = plan_service._create_commit(project, 'some_id')
+        plan = plan_service._create_plan(project, 'some_id')
         with pytest.raises(RuntimeError):
-            plan_service.delete_commit(commit)
+            plan_service.delete_plan(plan)

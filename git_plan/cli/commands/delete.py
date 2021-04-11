@@ -12,7 +12,7 @@ from git_plan.util.decorators import requires_initialized, requires_git_reposito
 @requires_initialized
 @requires_git_repository
 class Delete(Command):
-    """Delete an existing commit"""
+    """Delete an existing plan"""
 
     subcommand = 'delete'
 
@@ -22,22 +22,22 @@ class Delete(Command):
         self._plan_service = plan_service
 
     def command(self, **kwargs):
-        """Create a new commit"""
-        commits = self._plan_service.get_commits(self._repository)
-        if not commits:
-            self._ui.bold('No commits found.')
+        """Create a new plan"""
+        plans = self._plan_service.get_plans(self._repository)
+        if not plans:
+            self._ui.bold('No plans found.')
             return
 
-        chosen_commit = self._ui.choose_commit(commits, 'Which plan do you want to delete?')
+        chosen_plan = self._ui.choose_plan(plans, 'Which plan do you want to delete?')
 
-        self._ui.bold(f'{chosen_commit.message.headline}\n')
-        confirm_msg = 'Are you sure you want to delete this commit?'
+        self._ui.bold(f'{chosen_plan.message.headline}\n')
+        confirm_msg = 'Are you sure you want to delete this plan?'
         if not self._ui.confirm(confirm_msg):
             self._ui.bold("Stopped.")
             return
 
-        self._plan_service.delete_commit(chosen_commit)
+        self._plan_service.delete_plan(chosen_plan)
         self._ui.bold('Deleted.')
 
     def register_subparser(self, subparsers: Any):
-        subparsers.add_parser(Delete.subcommand, help='Delete a planned commit.')
+        subparsers.add_parser(Delete.subcommand, help='Delete a plan.')
