@@ -2,7 +2,7 @@
 name: Bug Report
 about: Create a report of a bug or problem
 labels: bug
-
+title: "bug: "
 ---
 
 Describe the bug
