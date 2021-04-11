@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Optional
 
 from git_plan.exceptions import GitPlanException, NotInitialized
-from git_plan.model.repository import Repository
+from git_plan.model.project import Project
 
 PLAN_FILE_EXT = '.txt'
 
@@ -51,10 +51,27 @@ class PlanMessage:
 
 
 @dataclass
+class PlanId:
+    """Represents the ID of a plan"""
+    label: str
+    number: int
+
+    def __str__(self):
+        return f"{self.label}-{self.number}"
+
+    @classmethod
+    def from_string(cls, value: str):
+        parts = value.split('-')
+        if len(parts) != 2:
+            raise ValueError(f"Invalid PlanId: {value}")
+        return PlanId(parts[0], int(parts[1]))
+
+
+@dataclass
 class Plan:
     """Represents a planned commit"""
-    repository: Repository
-    id: str
+    project: Project
+    id: PlanId
     branch: str
     created_at: int
     updated_at: int
@@ -72,7 +89,7 @@ class Plan:
     @property
     def path(self) -> Path:
         """The absolute path where this plan is stored"""
-        return Path(self.repository.plan_files_dir / self.filename).with_suffix(PLAN_FILE_EXT).resolve()
+        return Path(self.project.plan_files_dir / self.filename).with_suffix(PLAN_FILE_EXT).resolve()
 
     @property
     def message(self):
@@ -94,7 +111,7 @@ class Plan:
         if not self._message:
             raise RuntimeError("Cannot save a plan with no message.")
 
-        if not self.repository.is_initialized():
+        if not self.project.is_initialized:
             raise NotInitialized()
 
         if not self.created_at:
@@ -117,19 +134,20 @@ class Plan:
             file.write(json.dumps(plan_dict))
 
     @classmethod
-    def from_file(cls, file: Path, repository: Repository) -> "Plan":
+    def from_file(cls, file: Path, project: Project) -> "Plan":
         """Load a plan from a file"""
         with open(file, 'r') as fp:
             plan_data = json.load(fp)
 
         plan_message = PlanMessage(**plan_data['message'])
-        plan_id = file.stem.split('-')[1]
+        plan_id_str = file.stem.split('-')[1]
+        plan_id = PlanId.from_string(plan_id_str)
         branch = plan_data['branch']
         created_at = plan_data.get('created_at', time.time())
         updated_at = plan_data.get('updated_at', created_at)
 
         plan = Plan(
-            repository,
+            project,
             plan_id,
             branch,
             int(created_at),

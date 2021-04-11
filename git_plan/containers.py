@@ -12,34 +12,42 @@ from git_plan.cli.commands.delete import Delete
 from git_plan.cli.commands.edit import Edit
 from git_plan.cli.commands.init import Init
 from git_plan.cli.commands.list import List
-from git_plan.model.repository import Repository
+from git_plan.model.project import Project
 from git_plan.service.git import GitService
 from git_plan.service.plan import PlanService
-from git_plan.service.repository import RepositoryService
+from git_plan.service.project import ProjectService
+from git_plan.service.provider import ProviderService
 from git_plan.service.ui import UIService
 
 
 class Core(containers.DeclarativeContainer):
     """Global configuration for the system"""
     config = providers.Configuration()
-    repository = providers.Singleton(
-        Repository.from_working_dir,
-        working_dir=config.working_dir
+    project = providers.Singleton(
+        Project.from_dir,
+        directory=config.working_dir
     )
 
 
 class Services(containers.DeclarativeContainer):
     """Dependency structure for services"""
     config = providers.Configuration()
+    core = providers.DependenciesContainer()
 
     git_service = providers.Singleton(GitService)
+    provider_service = providers.Singleton(
+        ProviderService,
+        project_label=config.label
+    )
     plan_service = providers.Singleton(
         PlanService,
         plan_template=config.template.plan,
         edit_template=config.template.edit,
         git_service=git_service,
+        provider_service=provider_service,
+        project=core.project
     )
-    repository = providers.Singleton(RepositoryService)
+    project = providers.Singleton(ProjectService)
     ui_service = providers.Singleton(UIService)
 
 
@@ -54,38 +62,38 @@ class Commands(containers.DeclarativeContainer):
         plan_service=services.plan_service,
         ui_service=services.ui_service,
         git_service=services.git_service,
-        repository=core.repository
+        project=core.project
     )
     add_command = providers.Singleton(
         Add,
         plan_service=services.plan_service,
         ui_service=services.ui_service,
-        repository=core.repository
+        project=core.project
     )
     edit_command = providers.Singleton(
         Edit,
         ui_service=services.ui_service,
         plan_service=services.plan_service,
-        repository=core.repository
+        project=core.project
     )
     delete_command = providers.Singleton(
         Delete,
         ui_service=services.ui_service,
         plan_service=services.plan_service,
-        repository=core.repository
+        project=core.project
     )
     commit_command = providers.Singleton(
         Commit,
         ui_service=services.ui_service,
         plan_service=services.plan_service,
         git_service=services.git_service,
-        repository=core.repository
+        project=core.project
     )
     init_command = providers.Singleton(
         Init,
-        repository_service=services.repository,
+        project_service=services.project,
         ui_service=services.ui_service,
-        repository=core.repository
+        project=core.project
     )
 
 
@@ -101,6 +109,7 @@ class Application(containers.DeclarativeContainer):
     services = providers.Container(
         Services,
         config=config,
+        core=core
     )
 
     commands = providers.Container(
@@ -121,6 +130,6 @@ class Application(containers.DeclarativeContainer):
             commands.init_command,
             commands.delete_command
         ),
-        plan_service = services.plan_service,
-        repository = core.repository
+        plan_service=services.plan_service,
+        project=core.project
     )

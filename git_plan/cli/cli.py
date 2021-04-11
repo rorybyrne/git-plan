@@ -7,17 +7,17 @@ import pkg_resources
 
 from git_plan.cli.commands.command import Command
 from git_plan.exceptions import CommandNotFound
-from git_plan.model.repository import Repository
+from git_plan.model.project import Project
 from git_plan.service.plan import PlanService
 
 
 class CLI:
     """The command-line entrypoint"""
 
-    def __init__(self, commands: List[Command], plan_service: PlanService, repository: Repository):
+    def __init__(self, commands: List[Command], plan_service: PlanService, project: Project):
         assert not any(c.subcommand is None for c in commands), "Command missing subcommand attribute"
         self._plan_service = plan_service
-        self._repository = repository
+        self._project = project
 
         self._parser = argparse.ArgumentParser(prog='git-plan', description='A better workflow for git.')
         self._parser.add_argument('subcommand', type=str, nargs='?', help='The subcommand to run')
@@ -42,7 +42,7 @@ class CLI:
             return
 
         if not parsed_args.subcommand:
-            if self._plan_service.has_plans(self._repository):
+            if self._plan_service.has_plans():
                 parsed_args.subcommand = "list"
             else:
                 parsed_args.subcommand = "add"

@@ -39,5 +39,6 @@ DEFAULT_SETTINGS = {
         "edit": DefaultTemplate.EDIT,
         "plan": DefaultTemplate.PLAN
     },
-    "project_root": None
+    "project_root": None,
+    "label": "GP"
 }

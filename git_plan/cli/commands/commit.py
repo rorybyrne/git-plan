@@ -8,11 +8,8 @@ from git_plan.cli.commands.command import Command
 from git_plan.exceptions import CommitAbandoned
 from git_plan.service.git import GitService
 from git_plan.service.plan import PlanService
-from git_plan.util.decorators import requires_initialized, requires_git_repository
 
 
-@requires_initialized
-@requires_git_repository
 class Commit(Command):
     """Commit a plan"""
 
@@ -27,7 +24,7 @@ class Commit(Command):
 
     def command(self, **kwargs):
         """Create a new commit"""
-        plans = self._plan_service.get_plans(self._repository)
+        plans = self._plan_service.get_plans(self._project)
         if not plans:
             print("No plans found.")
             return

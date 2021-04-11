@@ -6,11 +6,8 @@ from typing import Any
 
 from git_plan.cli.commands.command import Command
 from git_plan.service.plan import PlanService
-from git_plan.util.decorators import requires_initialized, requires_git_repository
 
 
-@requires_initialized
-@requires_git_repository
 class Edit(Command):
     """Edit an existing plan"""
 
@@ -22,7 +19,7 @@ class Edit(Command):
 
     def command(self, **kwargs):
         """Edit an existing plan"""
-        plans = self._plan_service.get_plans(self._repository)
+        plans = self._plan_service.get_plans(self._project)
         if not plans:
             self._ui.bold('No plans to edit.')
             return
