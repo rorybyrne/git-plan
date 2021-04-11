@@ -5,7 +5,6 @@ Author: Rory Byrne <rory@rory.bio>
 from pathlib import Path
 
 from git_plan import constants
-from git_plan.util.git import get_repository_root
 
 
 class Settings(dict):
@@ -42,6 +41,6 @@ class Settings(dict):
         settings.update(local_settings)  # Roll both into the default settings
 
         cwd = Path.cwd()
-        settings["project_root"] = get_repository_root(cwd)
+        settings["working_dir"] = cwd
 
         return Settings(settings)

@@ -3,7 +3,7 @@ import tempfile
 from pathlib import Path
 
 from git_plan.model.commit import Commit
-from git_plan.model.project import Project
+from git_plan.model.repository import Repository
 
 COMMIT_NO_TIME = {
     "branch": "foo",
@@ -30,7 +30,7 @@ def test_commit_should_auto_populate_time_fields_on_load():
         with open(file_name, 'a') as f:
             f.write(json.dumps(COMMIT_NO_TIME))
 
-        project = Project(tempdir)
+        project = Repository(tempdir)
         commit = Commit.from_file(file_name, project)
 
         assert commit.created_at is not None, "commit missing created_at field"
@@ -42,7 +42,7 @@ def test_commit_should_not_auto_populate_time_fields_on_load():
         with open(file_name, 'a') as f:
             f.write(json.dumps(COMMIT_WITH_TIME))
 
-        project = Project(tempdir)
+        project = Repository(tempdir)
         commit = Commit.from_file(file_name, project)
 
         assert commit.created_at == 1616842401, "created_at has wrong value"

@@ -8,8 +8,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
-from git_plan.exceptions import GitPlanException, ProjectNotInitialized
-from git_plan.model.project import Project
+from git_plan.exceptions import GitPlanException, NotInitialized
+from git_plan.model.repository import Repository
 
 COMMIT_FILE_EXT = '.txt'
 
@@ -53,7 +53,7 @@ class CommitMessage:
 @dataclass
 class Commit:
     """Represents a planned commit"""
-    project: Project
+    repository: Repository
     id: str
     branch: str
     created_at: int
@@ -68,7 +68,7 @@ class Commit:
     @property
     def path(self) -> Path:
         """The absolute path where this plan is stored"""
-        return Path(self.project.plan_files_dir / self.filename).with_suffix(COMMIT_FILE_EXT).resolve()
+        return Path(self.repository.plan_files_dir / self.filename).with_suffix(COMMIT_FILE_EXT).resolve()
 
     @property
     def message(self):
@@ -90,8 +90,8 @@ class Commit:
         if not self._message:
             raise RuntimeError("Cannot save a commit with no message.")
 
-        if not self.project.is_initialized():
-            raise ProjectNotInitialized()
+        if not self.repository.is_initialized():
+            raise NotInitialized()
 
         if not self.created_at:
             raise ValueError("Missing created_at")
@@ -113,7 +113,7 @@ class Commit:
             file.write(json.dumps(commit_dict))
 
     @classmethod
-    def from_file(cls, file: Path, project: Project) -> "Commit":
+    def from_file(cls, file: Path, repository: Repository) -> "Commit":
         """Load a commit from a file"""
         with open(file, 'r') as fp:
             commit_data = json.load(fp)
@@ -125,7 +125,7 @@ class Commit:
         updated_at = commit_data.get('updated_at', created_at)
 
         commit = Commit(
-            project,
+            repository,
             commit_id,
             branch,
             int(created_at),

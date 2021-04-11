@@ -2,7 +2,7 @@
 name: Question
 about: Ask a question
 labels: question
-
+title: "question: "
 ---
 
 What's up?

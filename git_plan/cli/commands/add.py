@@ -7,10 +7,11 @@ from typing import Any
 from git_plan.cli.commands.command import Command
 from git_plan.exceptions import PlanEmpty
 from git_plan.service.plan import PlanService
-from git_plan.util.decorators import requires_initialized
+from git_plan.util.decorators import requires_initialized, requires_git_repository
 
 
 @requires_initialized
+@requires_git_repository
 class Add(Command):
     """Add a new commit"""
 
@@ -24,7 +25,7 @@ class Add(Command):
     def command(self, **kwargs):
         """Create a new commit"""
         try:
-            self._plan_service.add_commit(self._project)
+            self._plan_service.add_commit(self._repository)
         except PlanEmpty:
             self._ui.bold('Plan empty, abandoning.')
 

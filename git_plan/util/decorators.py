@@ -2,47 +2,67 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
+import subprocess
 from functools import wraps
-from typing import Callable, Type, Union
+from inspect import isclass
 
-from git_plan.cli.commands.command import Command
-from git_plan.exceptions import ProjectNotInitialized
-from git_plan.model.commit import Commit
-from git_plan.model.project import Project
+from git_plan.exceptions import NotAGitRepository, NotInitialized
+from git_plan.util import unix
 
 
-def requires_initialized(ref: Union[Type[Command], Callable]):
-    """Checks that the project in the arguments is initialized"""
+def _shell_is_in_git_repository():
+    command = 'git rev-parse --is-inside-work-tree'
+    cmd = command.split(' ')
+    try:
+        unix.run_command(cmd)
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+
+def requires_git_repository(ref):
+    """Raises NotAGitRepository if the check for a git repository fails"""
+    if isclass(ref):
+        if not hasattr(ref, 'run'):
+            raise ValueError("Cannot use @requires_git_repository on this class")
+        ref.run = requires_git_repository(ref.run)
+        return ref
 
     @wraps(ref)
-    def wrapper(*args, **kwargs):
-        if isinstance(ref, type):
-            instance = ref(*args, **kwargs)
-            instance.run = requires_initialized(instance.run)
-            return instance
+    def wrapper(self, *args, **kwargs):
+        if hasattr(self, '_repository'):
+            if self._repository is None:  # pylint: disable=protected-access
+                raise NotAGitRepository()
+        else:  # fallback to regular shell command
+            if not _shell_is_in_git_repository():
+                raise NotAGitRepository()
 
-        # Find the project or commit argument
-        if kwargs.get('project'):
-            project = kwargs.get('project')
-            is_initialized = project.is_initialized()
-        elif kwargs.get('commit'):
-            commit = kwargs.get('commit')
-            is_initialized = commit.project.is_initialized()
-        elif next((arg for arg in args if isinstance(arg, Project)), None):
-            project = next((arg for arg in args if isinstance(arg, Project)), None)
-            is_initialized = project.is_initialized()
-        elif next((arg for arg in args if isinstance(arg, Commit)), None):
-            commit = next((arg for arg in args if isinstance(arg, Commit)), None)
-            is_initialized = commit.project.is_initialized()
-        elif hasattr(ref, '__self__') and (getattr(ref.__self__, '_project', None)):  # command.run()
-            project = getattr(ref.__self__, '_project', None)
-            is_initialized = project.is_initialized()
-        else:
-            raise RuntimeError('Cannot check for initialized project due to invalid parameters on the function')
+        return ref(self, *args, **kwargs)
+
+    return wrapper
+
+
+def requires_initialized(ref):
+    """Checks that the repository in the arguments is initialized"""
+    if isclass(ref):
+        if not hasattr(ref, 'run'):
+            raise ValueError("Cannot use @requires_initialized on this class")
+        ref.run = requires_initialized(ref.run)
+        return ref
+
+    @wraps(ref)
+    def wrapper(self, *args, **kwargs):
+        if not hasattr(self, '_repository'):
+            raise ValueError("Cannot use the @requires_initialized decorator here.")
+
+        if self._repository is None:  # pylint: disable=protected-access
+            raise NotAGitRepository()
+
+        is_initialized = self._repository.is_initialized()  # pylint: disable=protected-access
 
         if is_initialized:
-            return ref(*args, **kwargs)
+            return ref(self, *args, **kwargs)
 
-        raise ProjectNotInitialized()
+        raise NotInitialized()
 
     return wrapper

@@ -2,7 +2,7 @@
 name: Enhancement
 about: New/updated functionality
 labels: enhancement
-
+title: "feat: "
 ---
 
 Current Situation

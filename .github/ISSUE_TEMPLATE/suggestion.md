@@ -2,7 +2,7 @@
 name: Suggestion
 about: Suggest an idea for this project
 labels: discussion
-
+title: "suggestion: "
 ---
 
 What's up?
