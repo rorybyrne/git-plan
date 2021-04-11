@@ -30,8 +30,10 @@ def requires_git_repository(ref):
 
     @wraps(ref)
     def wrapper(self, *args, **kwargs):
-        if hasattr(self, '_repository'):
-            if self._repository is None:  # pylint: disable=protected-access
+        if hasattr(self, '_project'):
+            if self._project is None:  # pylint: disable=protected-access
+                raise RuntimeError(f"_project was None on {self.__class__.__name__}")
+            if not self._project.is_a_git_repository:
                 raise NotAGitRepository()
         else:  # fallback to regular shell command
             if not _shell_is_in_git_repository():
@@ -52,17 +54,12 @@ def requires_initialized(ref):
 
     @wraps(ref)
     def wrapper(self, *args, **kwargs):
-        if not hasattr(self, '_repository'):
-            raise ValueError("Cannot use the @requires_initialized decorator here.")
+        if not hasattr(self, '_project'):
+            raise RuntimeError(f"_project was None on {self.__class__.__name__}")
 
-        if self._repository is None:  # pylint: disable=protected-access
-            raise NotAGitRepository()
+        if not self._project.is_initialized:  # pylint: disable=protected-access
+            raise NotInitialized()
 
-        is_initialized = self._repository.is_initialized()  # pylint: disable=protected-access
-
-        if is_initialized:
-            return ref(self, *args, **kwargs)
-
-        raise NotInitialized()
+        return ref(self, *args, **kwargs)
 
     return wrapper

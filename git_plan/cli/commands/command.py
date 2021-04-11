@@ -5,7 +5,7 @@
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional, Any
 
-from git_plan.model.repository import Repository
+from git_plan.model.project import Project
 from git_plan.service.ui import UIService
 
 if TYPE_CHECKING:
@@ -19,9 +19,9 @@ class Command(ABC):
 
     subcommand: str
 
-    def __init__(self, repository: Optional[Repository], ui_service: UIService):
+    def __init__(self, project: Project, ui_service: UIService):
         self._cli: Optional[CLI] = None
-        self._repository: Optional[Repository] = repository
+        self._project: Project = project
         self._ui = ui_service
 
     def run(self, context: dict):

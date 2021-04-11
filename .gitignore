@@ -134,3 +134,4 @@ dmypy.json
 _version
 .tags
 .plan
+.projections.json

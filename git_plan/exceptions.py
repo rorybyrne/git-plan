@@ -8,16 +8,20 @@ class GitPlanException(Exception):
     """Base exception for git plan"""
 
 
+class ConfigurationError(GitPlanException):
+    """Git plan is mis-configured"""
+
+
 class CommandNotFound(GitPlanException):
     """Command doesn't exist"""
 
 
 class NotInitialized(GitPlanException):
-    """The repo was not initialized"""
+    """The project was not initialized"""
 
 
 class AlreadyInitialized(GitPlanException):
-    """The repo is already initialized"""
+    """The project is already initialized"""
 
 
 class CommitAbandoned(GitPlanException):
@@ -33,4 +37,4 @@ class GitException(GitPlanException):
 
 
 class NotAGitRepository(GitException):
-    """The current repo is not a git repository"""
+    """The project is not a git repository"""
