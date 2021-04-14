@@ -1,6 +1,6 @@
 """Local Provider"""
 
-from git_plan.service.providers.provider import Provider
+from .base import Provider
 
 
 class LocalProvider(Provider):

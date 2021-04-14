@@ -6,7 +6,6 @@ from argparse import ArgumentParser
 from typing import Any
 
 from git_plan.cli.commands.command import Command
-from git_plan.exceptions import NotAGitRepository
 from git_plan.service.git import GitService
 from git_plan.service.plan import PlanService
 
@@ -41,7 +40,7 @@ class List(Command):
 
             return
 
-        plans = sorted(plans, key=lambda c: c.id)
+        plans = sorted(plans, key=lambda c: c.created_at)
         self._ui.render_plans(plans, headline_only=not long)
 
     def register_subparser(self, subparsers: Any):

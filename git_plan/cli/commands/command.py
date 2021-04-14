@@ -9,7 +9,7 @@ from git_plan.model.project import Project
 from git_plan.service.ui import UIService
 
 if TYPE_CHECKING:
-    from git_plan.cli.cli import CLI
+    from git_plan.cli.cli import CLI  # pylint: disable=cyclic-import
 else:
     CLI = Any
 

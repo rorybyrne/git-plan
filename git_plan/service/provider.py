@@ -3,8 +3,7 @@
 Functionality relating to Plan Providers
 """
 
-from git_plan.service.providers.local import LocalProvider
-from git_plan.service.providers.provider import Provider
+from git_plan.service.providers import LocalProvider, Provider
 
 
 class ProviderException(Exception):
@@ -12,6 +11,13 @@ class ProviderException(Exception):
 
 
 class ProviderService:
+    """Functionality for working with plan providers
+
+
+    Interface:
+            get_by_name(name)       -> Provider
+            get_local_provider()    -> LocalProvider
+    """
     LOCAL = "local"
 
     def __init__(self, project_label: str):
@@ -21,8 +27,8 @@ class ProviderService:
         """Tries to get the Provider by its name, and raises a ProviderException if it cannot be found"""
         if name == self.LOCAL:
             return LocalProvider(self._project_label)
-        else:
-            raise ProviderException(f"Provider not found: {name}")
+
+        raise ProviderException(f"Provider not found: {name}")
 
     def get_local_provider(self) -> LocalProvider:
         """Get an instance of LocalProvider"""

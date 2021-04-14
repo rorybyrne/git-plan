@@ -1,3 +1,4 @@
+"""Git Plan"""
 from pathlib import Path
 
 VERSION = {}

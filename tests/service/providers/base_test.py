@@ -2,7 +2,7 @@ import pytest
 
 from git_plan.exceptions import ConfigurationError
 from git_plan.model.plan import Plan, PlanId, PlanMessage
-from git_plan.service.providers.provider import Provider
+from git_plan.service.providers import Provider
 
 
 def test_provider_should_generate_valid_id():

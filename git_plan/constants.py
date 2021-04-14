@@ -4,9 +4,7 @@ Author: Rory Byrne <rory@rory.bio>
 """
 
 
-class DefaultTemplate:
-
-    PLAN = """########### PLAN SUMMARY (50 chars) #############
+PLAN_TEMPLATE = """########### PLAN SUMMARY (50 chars) #############
 Insert headline
 ########### DETAILS #################################################
 What does this commit do?
@@ -24,7 +22,7 @@ Notes
 ###########################################################
 """
 
-    EDIT = """########### PLAN SUMMARY (50 chars) #############
+EDIT_TEMPLATE = """########### PLAN SUMMARY (50 chars) #############
 %headline%
 ########### DETAILS #################################################
 %body%
@@ -36,8 +34,8 @@ Notes
 
 DEFAULT_SETTINGS = {
     "template": {
-        "edit": DefaultTemplate.EDIT,
-        "plan": DefaultTemplate.PLAN
+        "edit": EDIT_TEMPLATE,
+        "plan": PLAN_TEMPLATE
     },
     "project_root": None,
     "label": "GP"

@@ -10,7 +10,8 @@ PLAN_NO_TIME = {
     "message": {
         "headline": "headline",
         "body": "body"
-    }
+    },
+    "id": "TST-1"
 }
 
 PLAN_WITH_TIME = {
@@ -19,6 +20,7 @@ PLAN_WITH_TIME = {
         "headline": "headline",
         "body": "body"
     },
+    "id": "TST-2",
     "created_at": 1616842401,
     "updated_at": 1616842401,
 }
