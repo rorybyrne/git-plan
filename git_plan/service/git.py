@@ -19,9 +19,6 @@ class GitService:
     GET_BRANCH = 'git branch --show-current'
     CONFIGURED_GIT_EDITOR = 'git config --global core.editor'
 
-    def __init__(self):
-        pass
-
     @requires_git_repository
     def commit(self, plan: Plan):
         """Runs git commit with the given plan as a template"""

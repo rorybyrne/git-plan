@@ -32,6 +32,7 @@ class Project:
 
     @property
     def is_a_git_repository(self) -> bool:
+        """Returns whether or not the project is a git repository"""
         try:
             get_repository_root(self.root_dir)
             return True

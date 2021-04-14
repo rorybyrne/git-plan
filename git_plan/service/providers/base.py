@@ -8,6 +8,7 @@ from git_plan.model.plan import Plan, PlanId
 
 
 class Provider(ABC):
+    """Base class for plan providers"""
 
     def __init__(self, label: str):
         self._label = label

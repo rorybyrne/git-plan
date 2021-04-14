@@ -61,6 +61,7 @@ class PlanId:
 
     @classmethod
     def from_string(cls, value: str):
+        """Build a PlanId from a string value"""
         parts = value.split('-')
         if len(parts) != 2:
             raise ValueError(f"Invalid PlanId: {value}")
@@ -140,8 +141,11 @@ class Plan:
             plan_data = json.load(fp)
 
         plan_message = PlanMessage(**plan_data['message'])
-        plan_id_str = file.stem.split('-')[1]
-        plan_id = PlanId.from_string(plan_id_str)
+        plan_id_str = plan_data.get('id', None)
+        if not plan_id_str:
+            raise ValueError("Plan is missing id field")
+
+        plan_id = PlanId.from_string(plan_id_str) if plan_id_str else None
         branch = plan_data['branch']
         created_at = plan_data.get('created_at', time.time())
         updated_at = plan_data.get('updated_at', created_at)
