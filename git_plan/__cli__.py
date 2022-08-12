@@ -6,12 +6,13 @@ import sys
 from pathlib import Path
 from typing import List
 
-from dependency_injector.wiring import inject, Provide
+from dependency_injector.wiring import Provide, inject
 
 from git_plan.cli.cli import CLI
 from git_plan.conf import Settings
 from git_plan.containers import Application
-from git_plan.exceptions import NotAGitRepository, NotInitialized, GitPlanException
+from git_plan.exceptions import (GitPlanException, NotAGitRepository,
+                                 NotInitialized)
 
 HOME = str(Path.home())
 

@@ -7,17 +7,25 @@ import pkg_resources
 
 from git_plan.cli.commands.command import Command
 from git_plan.exceptions import CommandNotFound
-from git_plan.model.repository import Repository
+from git_plan.service.migration import MigrationService
 from git_plan.service.plan import PlanService
+from git_plan.service.ui import UIService
 
 
 class CLI:
     """The command-line entrypoint"""
 
-    def __init__(self, commands: List[Command], plan_service: PlanService, repository: Repository):
+    def __init__(
+        self,
+        commands: List[Command],
+        plan_service: PlanService,
+        migration_service: MigrationService,
+        ui_service: UIService
+    ):
         assert not any(c.subcommand is None for c in commands), "Command missing subcommand attribute"
         self._plan_service = plan_service
-        self._repository = repository
+        self._migration = migration_service
+        self._ui = ui_service
 
         self._parser = argparse.ArgumentParser(prog='git-plan', description='A better workflow for git.')
         self._parser.add_argument('subcommand', type=str, nargs='?', help='The subcommand to run')
@@ -41,8 +49,14 @@ class CLI:
             self.version()
             return
 
+        if parsed_args.subcommand != "migrate" and self._migration.should_migrate():
+            self._ui.bold(
+                "The format for plan files has changed, please run `git plan migrate` to migrate your existing plans"
+            )
+            return
+
         if not parsed_args.subcommand:
-            if self._plan_service.has_commits(self._repository):
+            if self._plan_service.has_plans():
                 parsed_args.subcommand = "list"
             else:
                 parsed_args.subcommand = "add"
