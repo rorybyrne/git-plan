@@ -4,6 +4,7 @@ version = "0.2.3"
 description = "A better personal workflow for git"
 authors = ["Rory Byrne <rory@rory.bio>"]
 license = "MIT"
+repository = "https://github.com/synek/git-plan"
 
 [tool.poetry.scripts]
 git-plan = 'git_plan.__cli__:main'
