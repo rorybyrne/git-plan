@@ -1,9 +1,9 @@
 """CLI Entrypoint"""
+
 import argparse
 from argparse import Namespace
+from importlib.metadata import version
 from typing import Dict, List
-
-import pkg_resources
 
 from git_plan.cli.commands.command import Command
 from git_plan.exceptions import CommandNotFound
@@ -20,17 +20,17 @@ class CLI:
         commands: List[Command],
         plan_service: PlanService,
         migration_service: MigrationService,
-        ui_service: UIService
+        ui_service: UIService,
     ):
         assert not any(c.subcommand is None for c in commands), "Command missing subcommand attribute"
         self._plan_service = plan_service
         self._migration = migration_service
         self._ui = ui_service
 
-        self._parser = argparse.ArgumentParser(prog='git-plan', description='A better workflow for git.')
-        self._parser.add_argument('subcommand', type=str, nargs='?', help='The subcommand to run')
-        self._parser.add_argument('--version', dest='version', action='store_true')
-        subparsers = self._parser.add_subparsers(dest='subcommand')
+        self._parser = argparse.ArgumentParser(prog="git-plan", description="A better workflow for git.")
+        self._parser.add_argument("subcommand", type=str, nargs="?", help="The subcommand to run")
+        self._parser.add_argument("--version", dest="version", action="store_true")
+        subparsers = self._parser.add_subparsers(dest="subcommand")
 
         for command in commands:
             command.register_subparser(subparsers)
@@ -56,10 +56,7 @@ class CLI:
             return
 
         if not parsed_args.subcommand:
-            if self._plan_service.has_plans():
-                parsed_args.subcommand = "list"
-            else:
-                parsed_args.subcommand = "add"
+            parsed_args.subcommand = "add"
 
         try:
             self.invoke(**vars(parsed_args))  # Convert to dict
@@ -95,8 +92,8 @@ class CLI:
     @staticmethod
     def version():
         """Print the version"""
-        version = pkg_resources.require('git_plan')[0]
-        print(version)
+        _version = version("git_plan")
+        print(_version)
 
     def help(self):
         """Print the help"""
