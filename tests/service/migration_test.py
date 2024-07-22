@@ -1,10 +1,9 @@
 import json
-import tempfile
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
 
+from git_plan.constants import GIT_DIR
 from git_plan.model.plan import Plan, PlanId, PlanMessage
 from git_plan.model.project import Project
 from git_plan.service.git import GitService
@@ -19,59 +18,54 @@ OLD_FORMAT_PLAN = {
         "body": "body",
     },
     "created_at": 12345,
-    "updated_at": 67890
+    "updated_at": 67890,
 }
 
 
 class TestMigrationService:
 
     @pytest.fixture
-    def migration_service(self):
+    def migration_service(self, project: Project):
         provider_service = ProviderService("TST")
         git_service = GitService()
-        tempdir = tempfile.TemporaryDirectory()
-        Path(tempdir.name, '.git').mkdir()
-        Path(tempdir.name, '.plan').mkdir()
-        Path(tempdir.name, '.plan', 'plans').mkdir()
-        project = Project(Path(tempdir.name))
-        templates = {
-            "plan": "",
-            "edit": ""
-        }
+        templates = {"plan": "", "edit": ""}
         plan_service = PlanService(templates, git_service, provider_service, project)
         migration_service = MigrationService(plan_service, project)
 
-        try:
-            yield migration_service
-        finally:
-            tempdir.cleanup()
+        yield migration_service
 
-    @patch('git_plan.service.plan.PlanService._get_latest_plan')
+    @patch("git_plan.service.plan.PlanService._get_latest_plan")
     def test_perform_migration_should_add_an_id_field_to_the_json_data(
-        self, mock_get_latest, migration_service: MigrationService
+        self, mock_get_latest, project: Project, migration_service: MigrationService
     ):
         plan_id = PlanId("TST", 41)
-        plan = Plan(migration_service._plan_service._project, plan_id, "branch", 12345, 12345)
+        plan = Plan(
+            project, plan_id, "branch", 12345, 12345, PlanMessage(headline="Foo", body="bar")
+        )
         mock_get_latest.return_value = plan
 
-        file = migration_service._plan_service._project.plan_files_dir / 'commit-12345.txt'
-        with open(file, 'a') as fp:
+        file = project.plan_files_dir / "commit-12345.txt"
+        with open(file, encoding="utf8", mode="a") as fp:
             json.dump(OLD_FORMAT_PLAN, fp)
 
         migration_service.migrate()
 
-        with open(file.with_name("TST-42")) as fp:
+        with open(file.with_name("TST-42"), encoding="utf8") as fp:
             data = json.load(fp)
             assert "id" in data and data["id"] == "TST-42"
 
-    @patch('git_plan.service.plan.PlanService._get_latest_plan')
-    def test_perform_migration_should_not_run_twice(self, mock_get_latest, migration_service: MigrationService):
+    @patch("git_plan.service.plan.PlanService._get_latest_plan")
+    def test_perform_migration_should_not_run_twice(
+        self, mock_get_latest, project: Project, migration_service: MigrationService
+    ):
         plan_id = PlanId("TST", 41)
-        plan = Plan(migration_service._plan_service._project, plan_id, "branch", 12345, 12345)
+        plan = Plan(
+            project, plan_id, "branch", 12345, 12345, PlanMessage(headline="Foo", body="bar")
+        )
         mock_get_latest.return_value = plan
 
-        file = migration_service._plan_service._project.plan_files_dir / 'commit-12345.txt'
-        with open(file, 'a') as fp:
+        file = project.plan_files_dir / "commit-12345.txt"
+        with open(file, encoding="utf8", mode="a") as fp:
             json.dump(OLD_FORMAT_PLAN, fp)
 
         migration_service.migrate()

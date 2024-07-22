@@ -2,7 +2,9 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
+
 # pylint: disable=no-member
+
 from dependency_injector import containers, providers
 
 from git_plan.cli.cli import CLI
@@ -24,44 +26,34 @@ from git_plan.service.ui import UIService
 
 class Core(containers.DeclarativeContainer):
     """Global configuration for the system"""
+
     config = providers.Configuration()
-    project = providers.Singleton(
-        Project.from_dir,
-        directory=config.working_dir
-    )
+    project = providers.Singleton(Project.from_dir, root_dir=config.working_dir)
 
 
 class Services(containers.DeclarativeContainer):
     """Dependency structure for services"""
+
     config = providers.Configuration()
     core = providers.DependenciesContainer()
 
     git = providers.Singleton(GitService)
-    provider = providers.Singleton(
-        ProviderService,
-        project_label=config.label
-    )
+    provider = providers.Singleton(ProviderService, project_label=config.label)
     plan = providers.Singleton(
         PlanService,
-        templates=providers.Dict(
-            plan=config.template.plan,
-            edit=config.template.edit
-        ),
+        templates=providers.Dict(plan=config.template.plan, edit=config.template.edit),
         git_service=git,
         provider_service=provider,
-        project=core.project
+        project=core.project,
     )
-    migration = providers.Singleton(
-        MigrationService,
-        plan_service=plan,
-        project=core.project
-    )
+    migration = providers.Singleton(MigrationService, plan_service=plan, project=core.project)
     project = providers.Singleton(ProjectService)
     ui = providers.Singleton(UIService)
 
 
 class Commands(containers.DeclarativeContainer):
     """Dependency structure for Commands"""
+
     config = providers.Configuration()
     services = providers.DependenciesContainer()
     core = providers.DependenciesContainer()
@@ -71,68 +63,42 @@ class Commands(containers.DeclarativeContainer):
         plan_service=services.plan,
         ui_service=services.ui,
         git_service=services.git,
-        project=core.project
+        project=core.project,
     )
     add_command = providers.Singleton(
-        Add,
-        plan_service=services.plan,
-        ui_service=services.ui,
-        project=core.project
+        Add, plan_service=services.plan, ui_service=services.ui, project=core.project
     )
     edit_command = providers.Singleton(
-        Edit,
-        ui_service=services.ui,
-        plan_service=services.plan,
-        project=core.project
+        Edit, ui_service=services.ui, plan_service=services.plan, project=core.project
     )
     delete_command = providers.Singleton(
-        Delete,
-        ui_service=services.ui,
-        plan_service=services.plan,
-        project=core.project
+        Delete, ui_service=services.ui, plan_service=services.plan, project=core.project
     )
     commit_command = providers.Singleton(
         Commit,
         ui_service=services.ui,
         plan_service=services.plan,
         git_service=services.git,
-        project=core.project
+        project=core.project,
     )
     init_command = providers.Singleton(
-        Init,
-        project_service=services.project,
-        ui_service=services.ui,
-        project=core.project
+        Init, project_service=services.project, ui_service=services.ui, project=core.project
     )
     migrate_command = providers.Singleton(
-        Migrate,
-        project=core.project,
-        ui_service=services.ui,
-        migration_service=services.migration
+        Migrate, project=core.project, ui_service=services.ui, migration_service=services.migration
     )
 
 
 class Application(containers.DeclarativeContainer):
     """Top-level container for the application"""
+
     config = providers.Configuration()
 
-    core = providers.Container(
-        Core,
-        config=config
-    )
+    core = providers.Container(Core, config=config)
 
-    services = providers.Container(
-        Services,
-        config=config,
-        core=core
-    )
+    services = providers.Container(Services, config=config, core=core)
 
-    commands = providers.Container(
-        Commands,
-        config=config,
-        services=services,
-        core=core
-    )
+    commands = providers.Container(Commands, config=config, services=services, core=core)
 
     # Entrypoints
     cli = providers.Singleton(
@@ -144,7 +110,7 @@ class Application(containers.DeclarativeContainer):
             commands.commit_command,
             commands.init_command,
             commands.delete_command,
-            commands.migrate_command
+            commands.migrate_command,
         ),
         plan_service=services.plan,
         migration_service=services.migration,

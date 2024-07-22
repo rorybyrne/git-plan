@@ -1,4 +1,5 @@
 """Migration service"""
+
 import json
 import shutil
 from pathlib import Path
@@ -25,7 +26,7 @@ class MigrationService:
     def backup(self):
         """Backup the .plan directory"""
         directory = self._project.plan_dir
-        self._copy_and_overwrite(directory, directory.with_suffix('.bkp'))
+        self._copy_and_overwrite(directory, directory.with_suffix(".bkp"))
 
     def should_migrate(self) -> bool:
         """Checks whether any plans exist with the old formatting"""
@@ -39,7 +40,7 @@ class MigrationService:
     def migrate(self):
         """Migrates plan files to the new format"""
         plan_files = self._plan_service.get_plan_files()
-        plan_files = sorted(plan_files, key=lambda filename: int(filename.stem.split('-')[1]))
+        plan_files = sorted(plan_files, key=lambda filename: int(filename.stem.split("-")[1]))
         for plan_file in plan_files:
             if self._should_migrate(plan_file):
                 self._perform_migration(plan_file)
@@ -74,7 +75,7 @@ class MigrationService:
             data = json.load(fp)
 
         # Write to GP-1, instead of commit-12345
-        with open(plan_file.with_name(str(next_id)), 'w') as fp:
+        with open(plan_file.with_name(str(next_id)), "w") as fp:
             data["id"] = str(next_id)
             json.dump(data, fp)
             plan_file.unlink()

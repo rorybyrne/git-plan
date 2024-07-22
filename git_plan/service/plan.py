@@ -2,14 +2,16 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
+
 import os
+import subprocess
 import tempfile
 import time
 from pathlib import Path
-from subprocess import call
+from subprocess import CalledProcessError, call, check_call
 from typing import Dict, Iterable, List, Optional
 
-from git_plan.exceptions import NotInitialized, PlanEmpty
+from git_plan.exceptions import GitPlanException, NotInitialized, PlanEmpty
 from git_plan.model.plan import Plan, PlanId, PlanMessage
 from git_plan.model.project import Project
 from git_plan.service.git import GitService
@@ -34,11 +36,11 @@ class PlanService:
     """
 
     def __init__(
-            self,
-            templates: Dict[str, str],
-            git_service: GitService,
-            provider_service: ProviderService,
-            project: Project
+        self,
+        templates: Dict[str, str],
+        git_service: GitService,
+        provider_service: ProviderService,
+        project: Project,
     ):
         assert "edit" in templates, "Edit template missing"
         assert "plan" in templates, "Plan template missing"
@@ -49,16 +51,16 @@ class PlanService:
         self._project = project
 
     @requires_initialized
-    def get_plans(self, branch: str = None) -> List[Plan]:
+    def get_plans(self, for_branch: Optional[str] = None) -> List[Plan]:
         """Print the status of the plan
 
         Raises:
             RuntimeError:   Plan file not found
         """
-        return self._fetch_plans(self._project, branch=branch)
+        return self._fetch_plans(self._project, branch=for_branch)
 
     @requires_initialized
-    def add_plan(self) -> Plan:
+    def create_plan(self) -> Plan:
         """Create a plan in the given directory
 
         Prompts the user to create a new plan, and then generates an ID for the plan. The ID
@@ -73,9 +75,9 @@ class PlanService:
     @requires_initialized
     def edit_plan(self, plan: Plan):
         """Update the plan in the given directory"""
-        template = self._edit_template \
-            .replace('%headline%', plan.message.headline) \
-            .replace('%body%', plan.message.body)
+        template = self._edit_template.replace("%headline%", plan.message.headline).replace(
+            "%body%", plan.message.body
+        )
 
         new_message = self._prompt_user_for_plan(initial=template)
         plan.message = new_message
@@ -89,7 +91,7 @@ class PlanService:
             raise NotInitialized()
 
         if not plan.path.exists():
-            raise RuntimeError(f'Plan not found: {plan}')
+            raise RuntimeError(f"Plan not found: {plan}")
 
         plan.path.unlink()  # Deletes the file
 
@@ -136,17 +138,17 @@ class PlanService:
 
     def _create_plan(self, project: Project, plan_id: PlanId) -> Plan:
         message = self._prompt_user_for_plan()
-        if not message or message.headline == '':
-            raise RuntimeError("Invalid plan. Please include at least a headline.")
+        if not message or message.headline == "":
+            raise GitPlanException("Invalid plan. Please include at least a headline.")
 
         branch = self._git_service.get_current_branch()
         created_at: float = time.time()
         updated_at: float = created_at
-        plan = Plan(project, plan_id, branch, int(created_at), int(updated_at))
+        plan = Plan(project, plan_id, branch, int(created_at), int(updated_at), message)
         plan.message = message
         return plan
 
-    def _prompt_user_for_plan(self, initial: str = None) -> PlanMessage:
+    def _prompt_user_for_plan(self, initial: Optional[str] = None) -> PlanMessage:
         if not initial:
             initial = self._plan_template
 
@@ -156,18 +158,22 @@ class PlanService:
         if not is_installed(editor):
             raise RuntimeError("Couldn't find an editor installed on your system.")
 
-        with tempfile.NamedTemporaryFile(suffix=".tmp", mode='r+') as file:
+        with tempfile.NamedTemporaryFile(suffix=".tmp", mode="r+") as file:
             file.write(initial)
             file.flush()
-            call([editor, file.name])
+            try:
+                subprocess.run([editor, file.name], check=True)
+            except CalledProcessError as e:
+                raise GitPlanException() from e
 
             file.seek(0)
-            message_lines = file.readlines()
+            with open(file.name, encoding="utf8", mode="r") as updated_file:
+                message_lines = updated_file.readlines()
             processed_input = self._post_process_plan(message_lines)
 
             return PlanMessage.from_string(processed_input)
 
-    def _fetch_plans(self, project: Project, branch: str = None) -> List['Plan']:
+    def _fetch_plans(self, project: Project, branch: Optional[str] = None) -> List["Plan"]:
         """Fetch plans from disk and return them
 
         Args:
@@ -198,11 +204,11 @@ class PlanService:
 
     @staticmethod
     def _post_process_plan(lines: List[str]):
-        lines = [line.strip() for line in lines if not line.startswith('#') or line == '\n']
+        lines = [line.strip() for line in lines if not line.startswith("#") or line == "\n"]
         if not lines or len(lines) == 0:
             raise PlanEmpty()
 
         headline = lines[0].strip()
-        body = '\n'.join(lines[1:]).strip()
+        body = "\n".join(lines[1:]).strip()
 
-        return ''.join([headline, '\n', '\n', body])
+        return "".join([headline, "\n", "\n", body])

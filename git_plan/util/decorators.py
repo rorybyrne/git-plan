@@ -2,10 +2,12 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
+
 from functools import wraps
 from inspect import isclass
 
 from git_plan.exceptions import NotAGitRepository, NotInitialized
+from git_plan.model.project import Project
 from git_plan.util import unix
 
 
@@ -16,14 +18,8 @@ def requires_git_repository(ref):
 
     @wraps(ref)
     def wrapper(self, *args, **kwargs):
-        if hasattr(self, '_project'):
-            if self._project is None:  # pylint: disable=protected-access
-                raise RuntimeError(f"_project was None on {self.__class__.__name__}")
-            if not self._project.is_a_git_repository:  # pylint: disable=protected-access
-                raise NotAGitRepository()
-        else:  # fallback to regular shell command
-            if not unix.shell_is_in_git_repository():
-                raise NotAGitRepository()
+        if not unix.shell_is_in_git_repository():
+            raise NotAGitRepository()
 
         return ref(self, *args, **kwargs)
 
@@ -37,10 +33,8 @@ def requires_initialized(ref):
 
     @wraps(ref)
     def wrapper(self, *args, **kwargs):
-        if not hasattr(self, '_project'):
-            raise RuntimeError(f"_project was None on {self.__class__.__name__}")
-
-        if not self._project.is_initialized:  # pylint: disable=protected-access
+        project: Project = getattr(self, "_project", None)
+        if not project.is_initialized:
             raise NotInitialized()
 
         return ref(self, *args, **kwargs)

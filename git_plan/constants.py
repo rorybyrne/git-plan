@@ -3,7 +3,6 @@
 Author: Rory Byrne <rory@rory.bio>
 """
 
-
 PLAN_TEMPLATE = """########### PLAN SUMMARY (50 chars) #############
 Insert headline
 ########### DETAILS #################################################
@@ -33,10 +32,14 @@ EDIT_TEMPLATE = """########### PLAN SUMMARY (50 chars) #############
 
 
 DEFAULT_SETTINGS = {
-    "template": {
-        "edit": EDIT_TEMPLATE,
-        "plan": PLAN_TEMPLATE
-    },
+    "template": {"edit": EDIT_TEMPLATE, "plan": PLAN_TEMPLATE},
     "project_root": None,
-    "label": "GP"
+    "label": "GP",
 }
+
+GIT_DIR = ".git"
+
+GP_PROJECT_FNAME = "project.json"
+GP_DIR = ".plan"
+GP_PLANS_SUBDIR = "plans"
+GP_PLAN_FILE_EXT = ".json"

@@ -22,12 +22,16 @@ class CLI:
         migration_service: MigrationService,
         ui_service: UIService,
     ):
-        assert not any(c.subcommand is None for c in commands), "Command missing subcommand attribute"
+        assert not any(
+            c.subcommand is None for c in commands
+        ), "Command missing subcommand attribute"
         self._plan_service = plan_service
         self._migration = migration_service
         self._ui = ui_service
 
-        self._parser = argparse.ArgumentParser(prog="git-plan", description="A better workflow for git.")
+        self._parser = argparse.ArgumentParser(
+            prog="git-plan", description="A better workflow for git."
+        )
         self._parser.add_argument("subcommand", type=str, nargs="?", help="The subcommand to run")
         self._parser.add_argument("--version", dest="version", action="store_true")
         subparsers = self._parser.add_subparsers(dest="subcommand")

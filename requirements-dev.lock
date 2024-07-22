@@ -47,6 +47,8 @@ humanize==4.10.0
     # via git-plan
 identify==2.6.0
     # via pre-commit
+iniconfig==2.0.0
+    # via pytest
 inquirer==3.3.0
     # via git-plan
 isort==5.13.2
@@ -66,6 +68,7 @@ nodeenv==1.9.1
 packaging==24.1
     # via black
     # via pyproject-api
+    # via pytest
     # via tox
 pathspec==0.12.1
     # via black
@@ -75,6 +78,7 @@ platformdirs==4.2.2
     # via tox
     # via virtualenv
 pluggy==1.5.0
+    # via pytest
     # via tox
 pre-commit==3.7.1
 pycodestyle==2.12.0
@@ -87,6 +91,7 @@ pylint==3.2.6
 pyproject-api==1.7.1
     # via tox
 pyright==1.1.372
+pytest==8.3.1
 pyyaml==6.0.1
     # via pre-commit
 readchar==4.1.0

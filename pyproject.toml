@@ -9,15 +9,9 @@ authors = [
 repository = "https://github.com/synek/git-plan"
 readme = "README.md"
 
-### ENTRYPOINTS
-
-[project.scripts]
-git-plan = "git_plan.__cli__:main"
-gp = "git_plan.__cli__:main"
-
 ### DEPENDENCIES
 
-requires-python = ">= 3.11"
+requires-python = ">= 3.8"
 dependencies = [
     "dependency-injector>=4.41.0",
     "rich>=13.7.1",
@@ -27,6 +21,11 @@ dependencies = [
     "cachetools>=5.4.0",
 ]
 
+### ENTRYPOINTS
+
+[project.scripts]
+git-plan = "git_plan.__cli__:main"
+gp = "git_plan.__cli__:main"
 
 [tool.rye]
 managed = true
@@ -40,15 +39,17 @@ dev-dependencies = [
     "isort>=5.13.2",
     "flake8>=7.1.0",
     "flake8-pyproject>=1.2.3",
+    "pytest>=8.3.1",
 ]
 
 ### TOOLS
 
 [tool.black]
-line-length = 120
+line-length = 100
 
 [tool.isort]
-line_length = 120
+known_first_party = ['git_plan']
+line_length = 100
 multi_line_output = 3
 include_trailing_comma = true
 force_grid_wrap = 0
@@ -56,22 +57,19 @@ use_parentheses = true
 ensure_newline_before_comments = true
 
 [tool.pylint]
-max-line-length = 120
+max-line-length = 100
 disable = ["logging-fstring-interpolation"]
 extension-pkg-whitelist = "dependency_injector"
 generated-members = "dependency_inector.*, subcommand, wire"
 good-names = "id, fp, e"
 
 [tool.flake8]
-max-line-length = 120
+max-line-length = 100
 extend-ignore = "E266"
 disable = ["logging-fstring-interpolation"]
 
 [tool.pyright]
 include = ["git_plan", "tests" ]
-
-[tool.isort]
-known_first_party = ['git_plan']
 
 [tool.pytest]
 asyncio_mode = "auto"
