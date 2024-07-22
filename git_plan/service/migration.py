@@ -27,9 +27,11 @@ class MigrationService:
         directory = self._project.plan_dir
         self._copy_and_overwrite(directory, directory.with_suffix('.bkp'))
 
-    @requires_initialized
     def should_migrate(self) -> bool:
         """Checks whether any plans exist with the old formatting"""
+        if not self._project.is_initialized:
+            return False
+
         plan_files = self._plan_service.get_plan_files()
         return any(self._should_migrate(plan_file) for plan_file in plan_files)
 
