@@ -33,7 +33,7 @@ def requires_git_repository(ref):
 def requires_initialized(ref):
     """Checks that the repository in the arguments is initialized"""
     if isclass(ref):
-        raise ValueError("@requires_initialized can no longer be used on a class")
+        raise ValueError("deprecated: @requires_initialized can no longer be used on a class")
 
     @wraps(ref)
     def wrapper(self, *args, **kwargs):
