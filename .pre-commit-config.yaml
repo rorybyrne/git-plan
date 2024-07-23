@@ -3,21 +3,21 @@ repos:
     hooks:
       - id: tox
         name: tox
-        entry: poetry run tox
+        entry: rye run tox
         language: system
         pass_filenames: false
         stages: [commit]
       - files: ^git_plan/
         id: pylint
         name: pylint
-        entry: poetry run pylint
+        entry: rye run pylint
         language: system
         stages: [commit]
         types: [file, python]
       - files: ^git_plan/
         id: mypy
         name: mypy
-        entry: poetry run mypy
+        entry: rye run pyright
         language: system
         stages: [commit]
         types: [file, python]

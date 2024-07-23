@@ -2,11 +2,11 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
+
 from pathlib import Path
 
+from git_plan.constants import GIT_DIR
 from git_plan.exceptions import NotAGitRepository
-
-GIT_DIR = '.git'
 
 
 def get_repository_root(directory: Path):
@@ -18,8 +18,13 @@ def get_repository_root(directory: Path):
     """
     prev, directory = None, Path(directory).resolve()
     while prev != directory:
-        if (directory / GIT_DIR).exists():
+        if is_git_repository(directory):
             return directory.resolve()
         prev, directory = directory, directory.parent
 
     raise NotAGitRepository()
+
+
+def is_git_repository(directory: Path) -> bool:
+    """Check whether the directory has .git/"""
+    return (directory / GIT_DIR).exists()

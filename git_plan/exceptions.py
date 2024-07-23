@@ -5,32 +5,65 @@
 
 
 class GitPlanException(Exception):
-    """Base exception for git plan"""
+    """An error occurred:"""
+
+    def __str__(self) -> str:
+        docstring = self.__doc__ or "An error occurred."
+        message = f"\t{self.args[0]}" if self.args else ""
+        return docstring + message
+
+
+class ConfigurationError(GitPlanException):
+    """Git plan is mis-configured:"""
+
+
+### Commands
 
 
 class CommandNotFound(GitPlanException):
-    """Command doesn't exist"""
+    """Command doesn't exist:"""
+
+
+### Project
 
 
 class NotInitialized(GitPlanException):
-    """The repo was not initialized"""
+    """The project was not initialized."""
 
 
 class AlreadyInitialized(GitPlanException):
-    """The repo is already initialized"""
+    """The project is already initialized."""
+
+
+### Plans
 
 
 class CommitAbandoned(GitPlanException):
-    """The user abandoned their commit"""
+    """You abandoned the commit."""
 
 
 class PlanEmpty(GitPlanException):
-    """The commit plan was empty"""
+    """The commit plan was empty."""
+
+
+class NotFound(GitPlanException):
+    """Not found:"""
+
+
+class PlanNotFound(NotFound):
+    """Plan not found:"""
+
+
+### Git
 
 
 class GitException(GitPlanException):
-    """Base class for git-related exceptions"""
+    """An error occurred in git."""
 
 
 class NotAGitRepository(GitException):
-    """The current repo is not a git repository"""
+    """The project is not a git repository"""
+
+
+class NoStagedFiles(GitException):
+    """No staged files."""

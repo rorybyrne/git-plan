@@ -2,14 +2,15 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
-from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Optional, Any
 
-from git_plan.model.repository import Repository
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any, Optional
+
+from git_plan.model.project import Project
 from git_plan.service.ui import UIService
 
 if TYPE_CHECKING:
-    from git_plan.cli.cli import CLI
+    from git_plan.cli.cli import CLI  # pylint: disable=cyclic-import
 else:
     CLI = Any
 
@@ -19,16 +20,16 @@ class Command(ABC):
 
     subcommand: str
 
-    def __init__(self, repository: Optional[Repository], ui_service: UIService):
+    def __init__(self, ui_service: UIService, project: Project):
         self._cli: Optional[CLI] = None
-        self._repository: Optional[Repository] = repository
+        self._project = project
         self._ui = ui_service
 
     def run(self, context: dict):
         """Run the command"""
         self.command(**context)
 
-    def set_cli(self, cli: 'CLI'):
+    def set_cli(self, cli: "CLI"):
         """Set the CLI reference, so that a command can trigger other commands"""
         assert cli, "Cannot set CLI: None"
         self._cli = cli
