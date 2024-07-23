@@ -42,9 +42,10 @@ def main():
     except NotAGitRepository:
         print("You are not in a git repository (no .git/ directory found).")
     except GitPlanException as exc:
-        print("git plan encountered an error.")
-        print("Please open an issue at https://github.com/synek/git-plan and let us know.\n")
-        print(f"The error message was '{str(exc)}'")
+        print(str(exc))
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        print(exc)
+        print("\nPlease open an issue at https://github.com/synek/git-plan and let us know.\n")
 
 
 @inject

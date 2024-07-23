@@ -58,7 +58,7 @@ ensure_newline_before_comments = true
 
 [tool.pylint]
 max-line-length = 100
-disable = ["logging-fstring-interpolation"]
+disable = ["logging-fstring-interpolation", "arguments-differ", "unused-argument"]
 extension-pkg-whitelist = "dependency_injector"
 generated-members = "dependency_inector.*, subcommand, wire"
 good-names = "id, fp, e"

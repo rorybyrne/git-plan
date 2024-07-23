@@ -8,7 +8,7 @@ import subprocess
 import tempfile
 import time
 from pathlib import Path
-from subprocess import CalledProcessError, call, check_call
+from subprocess import CalledProcessError
 from typing import Dict, Iterable, List, Optional
 
 from git_plan.exceptions import GitPlanException, NotInitialized, PlanEmpty
@@ -58,6 +58,21 @@ class PlanService:
             RuntimeError:   Plan file not found
         """
         return self._fetch_plans(self._project, branch=for_branch)
+
+    @requires_initialized
+    def get_plan(self, with_id: str) -> Optional[Plan]:
+        """Get a plan by ID
+
+        Should load the plan from its corresponding JSON file or return None if it doesn't exist.
+        """
+        plan_files = self.get_plan_files()
+        for file in plan_files:
+            if file.stem == with_id:
+                try:
+                    return Plan.from_file(file, self._project)
+                except ValueError:
+                    return None
+        return None
 
     @requires_initialized
     def create_plan(self) -> Plan:
