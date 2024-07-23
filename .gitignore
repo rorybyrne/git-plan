@@ -135,3 +135,4 @@ _version
 .tags
 .plan
 .projections.json
+.aider*
