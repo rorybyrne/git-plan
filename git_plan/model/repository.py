@@ -2,6 +2,7 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -13,12 +14,13 @@ from git_plan.util.git import get_repository_root
 @dataclass
 class Repository:
     """A git repository"""
+
     root_dir: Path
 
     @property
     def plan_dir(self) -> Path:
         """This repo's .plan/ directory"""
-        return Path(self.root_dir) / '.plan'
+        return Path(self.root_dir) / ".plan"
 
     @property
     def plan_files_dir(self) -> Path:

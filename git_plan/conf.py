@@ -2,6 +2,7 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
+
 from pathlib import Path
 
 from git_plan import constants

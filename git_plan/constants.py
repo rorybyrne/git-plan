@@ -5,7 +5,6 @@ Author: Rory Byrne <rory@rory.bio>
 
 
 class DefaultTemplate:
-
     PLAN = """########### PLAN SUMMARY (50 chars) #############
 Insert headline
 ########### DETAILS #################################################
@@ -34,10 +33,4 @@ Notes
 """
 
 
-DEFAULT_SETTINGS = {
-    "template": {
-        "edit": DefaultTemplate.EDIT,
-        "plan": DefaultTemplate.PLAN
-    },
-    "project_root": None
-}
+DEFAULT_SETTINGS = {"template": {"edit": DefaultTemplate.EDIT, "plan": DefaultTemplate.PLAN}, "project_root": None}

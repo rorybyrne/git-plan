@@ -2,13 +2,14 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
+
 import os
 import tempfile
 import time
 from subprocess import call
-from typing import List
+from typing import List, Optional
 
-from git_plan.exceptions import PlanEmpty
+from git_plan.exceptions import GitPlanException, PlanEmpty
 from git_plan.model.commit import Commit, CommitMessage
 from git_plan.model.repository import Repository
 from git_plan.service.git import GitService
@@ -34,9 +35,11 @@ class PlanService:
 
     def edit_commit(self, commit: Commit):
         """Update the plan in the given directory"""
-        template = self._edit_template \
-            .replace('%headline%', commit.message.headline) \
-            .replace('%body%', commit.message.body)
+        if not commit.message:
+            raise GitPlanException("No commit message.")
+        template = self._edit_template.replace("%headline%", commit.message.headline).replace(
+            "%body%", commit.message.body
+        )
 
         new_message = self._prompt_user_for_plan(initial=template)
         commit.message = new_message
@@ -47,7 +50,7 @@ class PlanService:
     def delete_commit(commit: Commit):
         """Delete the chosen commit"""
         if not commit.path.exists():
-            raise RuntimeError(f'Commit not found: {commit}')
+            raise RuntimeError(f"Commit not found: {commit}")
 
         commit.path.unlink()  # Deletes the file
 
@@ -56,7 +59,7 @@ class PlanService:
         """Check if a plan already exists in the given directory"""
         return any(repository.plan_files_dir.iterdir())  # False if it cannot iterate at least once
 
-    def get_commits(self, repository: Repository, branch: str = None) -> List[Commit]:
+    def get_commits(self, repository: Repository, branch: Optional[str] = None) -> List[Commit]:
         """Print the status of the plan
 
         Raises:
@@ -68,7 +71,7 @@ class PlanService:
 
     def _create_commit(self, repository: Repository, commit_id: str) -> Commit:
         message = self._prompt_user_for_plan()
-        if not message or message.headline == '':
+        if not message or message.headline == "":
             raise RuntimeError("Invalid commit plan. Please include at least a headline.")
 
         branch = self._git_service.get_current_branch()
@@ -78,7 +81,7 @@ class PlanService:
         commit.message = message
         return commit
 
-    def _prompt_user_for_plan(self, initial: str = None) -> CommitMessage:
+    def _prompt_user_for_plan(self, initial: Optional[str] = None) -> CommitMessage:
         if not initial:
             initial = self._plan_template
 
@@ -88,7 +91,7 @@ class PlanService:
         if not is_installed(editor):
             raise RuntimeError("Couldn't find an editor installed on your system.")
 
-        with tempfile.NamedTemporaryFile(suffix=".tmp", mode='r+') as file:
+        with tempfile.NamedTemporaryFile(suffix=".tmp", mode="r+") as file:
             file.write(initial)
             file.flush()
             call([editor, file.name])
@@ -99,7 +102,7 @@ class PlanService:
 
             return CommitMessage.from_string(processed_input)
 
-    def _fetch_commits(self, repository: Repository, branch: str = None) -> List['Commit']:
+    def _fetch_commits(self, repository: Repository, branch: Optional[str] = None) -> List["Commit"]:
         if not self.has_commits(repository):
             return []
 
@@ -113,11 +116,11 @@ class PlanService:
 
     @staticmethod
     def _post_process_commit(lines: List[str]):
-        lines = [line.strip() for line in lines if not line.startswith('#') or line == '\n']
+        lines = [line.strip() for line in lines if not line.startswith("#") or line == "\n"]
         if not lines or len(lines) == 0:
             raise PlanEmpty()
 
         headline = lines[0].strip()
-        body = '\n'.join(lines[1:]).strip()
+        body = "\n".join(lines[1:]).strip()
 
-        return ''.join([headline, '\n', '\n', body])
+        return "".join([headline, "\n", "\n", body])

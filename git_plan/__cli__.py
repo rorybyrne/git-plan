@@ -2,6 +2,7 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
+
 import sys
 from pathlib import Path
 from typing import List

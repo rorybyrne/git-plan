@@ -2,9 +2,10 @@
 
 Author Rory Byrne <rory@rory.bio>
 """
+
 from shutil import which
 import subprocess
-from typing import List, Optional
+from typing import Optional, Sequence
 
 
 def is_installed(name: str) -> bool:
@@ -12,7 +13,7 @@ def is_installed(name: str) -> bool:
     return which(name) is not None
 
 
-def run_command(cmd: List[str], capture_output: bool = True) -> Optional[str]:
+def run_command(cmd: Sequence[str], capture_output: bool = True) -> Optional[str]:
     """Run a shell command"""
     result = subprocess.run(cmd, capture_output=capture_output, check=True)
     if result.stdout:

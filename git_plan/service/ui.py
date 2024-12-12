@@ -2,6 +2,7 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
+
 import datetime as dt
 from typing import List
 
@@ -9,6 +10,7 @@ import humanize
 import inquirer
 from rich import print as rich_print
 
+from git_plan.exceptions import GitPlanException
 from git_plan.model.commit import Commit
 
 
@@ -26,29 +28,31 @@ class UIService:
 
         options = [
             inquirer.List(
-                'commit',
-                message=message,
-                choices=[(c.message.headline, c) for c in commits]
+                "commit", message=message, choices=[(c.message.headline, c) for c in commits if c.message is not None]
             )
         ]
 
         answer = inquirer.prompt(options)
+        if answer is None:
+            raise GitPlanException("Got no answer.")
 
-        return answer['commit']
+        return answer["commit"]
 
     @staticmethod
     def confirm(message: str) -> bool:
         """Ask the user for confirmation"""
-        key = 'confirm'
+        key = "confirm"
         questions = [inquirer.Confirm(key, message=message)]
 
         answers = inquirer.prompt(questions)
+        if answers is None:
+            raise GitPlanException("Got no answer.")
 
         return answers[key]
 
     def bold(self, message: str):
         """Print a bolded message"""
-        self.print(f'[bold]{message}[/bold]')
+        self.print(f"[bold]{message}[/bold]")
 
     @staticmethod
     def print(message: str):
@@ -60,18 +64,21 @@ class UIService:
         for idx, commit in enumerate(commits):
             self._render_commit(commit, str(idx + 1), headline_only)
             if idx < len(commits) - 1:
-                print('')
+                print("")
 
     def _render_commit(self, commit: Commit, tag: str, headline_only):
         if not commit.updated_at:
             raise ValueError("Invalid commit: no updated_at field found.")
 
+        if not commit.message:
+            raise GitPlanException("Commit has no message.")
+
         time_display = f"[dim]({humanize.naturaltime(dt.datetime.fromtimestamp(commit.updated_at))})[/dim]"
         if headline_only:
-            self.print(f'[bold][{tag}][/bold] {commit.message.headline} {time_display}')
+            self.print(f"[bold][{tag}][/bold] {commit.message.headline} {time_display}")
         else:
-            self.print(f'[bold][[magenta]{tag}[/magenta]][/bold] on {commit.branch} {time_display}\n')
-            self.print(f'    {commit.message.headline}\n')
-            body_lines = commit.message.body.split('\n')
+            self.print(f"[bold][[magenta]{tag}[/magenta]][/bold] on {commit.branch} {time_display}\n")
+            self.print(f"    {commit.message.headline}\n")
+            body_lines = commit.message.body.split("\n")
             for line in body_lines:
-                self.print(f'    {line}')
+                self.print(f"    {line}")

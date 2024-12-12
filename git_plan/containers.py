@@ -2,6 +2,7 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
+
 # pylint: disable=no-member
 from dependency_injector import containers, providers
 
@@ -21,15 +22,14 @@ from git_plan.service.ui import UIService
 
 class Core(containers.DeclarativeContainer):
     """Global configuration for the system"""
+
     config = providers.Configuration()
-    repository = providers.Singleton(
-        Repository.from_working_dir,
-        working_dir=config.working_dir
-    )
+    repository = providers.Singleton(Repository.from_working_dir, working_dir=config.working_dir)
 
 
 class Services(containers.DeclarativeContainer):
     """Dependency structure for services"""
+
     config = providers.Configuration()
 
     git_service = providers.Singleton(GitService)
@@ -45,6 +45,7 @@ class Services(containers.DeclarativeContainer):
 
 class Commands(containers.DeclarativeContainer):
     """Dependency structure for Commands"""
+
     config = providers.Configuration()
     services = providers.DependenciesContainer()
     core = providers.DependenciesContainer()
@@ -54,61 +55,42 @@ class Commands(containers.DeclarativeContainer):
         plan_service=services.plan_service,
         ui_service=services.ui_service,
         git_service=services.git_service,
-        repository=core.repository
+        repository=core.repository,
     )
     add_command = providers.Singleton(
-        Add,
-        plan_service=services.plan_service,
-        ui_service=services.ui_service,
-        repository=core.repository
+        Add, plan_service=services.plan_service, ui_service=services.ui_service, repository=core.repository
     )
     edit_command = providers.Singleton(
-        Edit,
-        ui_service=services.ui_service,
-        plan_service=services.plan_service,
-        repository=core.repository
+        Edit, ui_service=services.ui_service, plan_service=services.plan_service, repository=core.repository
     )
     delete_command = providers.Singleton(
-        Delete,
-        ui_service=services.ui_service,
-        plan_service=services.plan_service,
-        repository=core.repository
+        Delete, ui_service=services.ui_service, plan_service=services.plan_service, repository=core.repository
     )
     commit_command = providers.Singleton(
         Commit,
         ui_service=services.ui_service,
         plan_service=services.plan_service,
         git_service=services.git_service,
-        repository=core.repository
+        repository=core.repository,
     )
     init_command = providers.Singleton(
-        Init,
-        repository_service=services.repository,
-        ui_service=services.ui_service,
-        repository=core.repository
+        Init, repository_service=services.repository, ui_service=services.ui_service, repository=core.repository
     )
 
 
 class Application(containers.DeclarativeContainer):
     """Top-level container for the application"""
+
     config = providers.Configuration()
 
-    core = providers.Container(
-        Core,
-        config=config
-    )
+    core = providers.Container(Core, config=config)
 
     services = providers.Container(
         Services,
         config=config,
     )
 
-    commands = providers.Container(
-        Commands,
-        config=config,
-        services=services,
-        core=core
-    )
+    commands = providers.Container(Commands, config=config, services=services, core=core)
 
     # Entrypoints
     cli = providers.Singleton(
@@ -119,8 +101,8 @@ class Application(containers.DeclarativeContainer):
             commands.edit_command,
             commands.commit_command,
             commands.init_command,
-            commands.delete_command
+            commands.delete_command,
         ),
-        plan_service = services.plan_service,
-        repository = core.repository
+        plan_service=services.plan_service,
+        repository=core.repository,
     )

@@ -9,10 +9,9 @@ from git_plan.service.repository import RepositoryService
 
 
 class TestProjectService:
-
     def test_initialize_should_succeed_in_a_fresh_git_repository(self):
         with tempfile.TemporaryDirectory() as tempdir:
-            Path(tempdir, '.git').mkdir()
+            Path(tempdir, ".git").mkdir()
             svc = RepositoryService()
             project = Repository(tempdir)
 
@@ -27,7 +26,7 @@ class TestProjectService:
 
     def test_initialize_should_raise_alreadyinitialized_if_run_twice(self):
         with tempfile.TemporaryDirectory() as tempdir:
-            Path(tempdir, '.git').mkdir()
+            Path(tempdir, ".git").mkdir()
             svc = RepositoryService()
             project = Repository(tempdir)
 

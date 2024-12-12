@@ -2,6 +2,7 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
+
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional, Any
 
@@ -28,7 +29,7 @@ class Command(ABC):
         """Run the command"""
         self.command(**context)
 
-    def set_cli(self, cli: 'CLI'):
+    def set_cli(self, cli: "CLI"):
         """Set the CLI reference, so that a command can trigger other commands"""
         assert cli, "Cannot set CLI: None"
         self._cli = cli

@@ -41,13 +41,12 @@ To use the tool, run `git plan init` (or simply `gp <command>`) to initialize, a
 ### Development
 
 * Clone: `git clone https://github.com/synek/git-plan && cd git-plan`
-* Create a virtualenv: `python -m venv .venv && source .venv/bin/activate`
-* Install: `poetry install`  (installs in the virtualenv)
+* Install: `uv sync`  (installs in the virtualenv)
 * Check: `git plan --version` or `gp --version`  (must be run from within the virtualenv)
 * Run tests: `tox`
-* Install pre-commit hooks: `poetry run pre-commit install`
+* Install pre-commit hooks: `uv run pre-commit install`
 
-The minimum requirement is `python3.6`.
+The minimum requirement is `python3.8`.
 
 ### Pre-Commit hooks
 

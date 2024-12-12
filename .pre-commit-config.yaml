@@ -3,21 +3,21 @@ repos:
     hooks:
       - id: tox
         name: tox
-        entry: poetry run tox
+        entry: uv run tox
         language: system
         pass_filenames: false
         stages: [commit]
       - files: ^git_plan/
-        id: pylint
-        name: pylint
-        entry: poetry run pylint
+        id: ruff
+        name: ruff
+        entry: uv run ruff format
         language: system
         stages: [commit]
         types: [file, python]
       - files: ^git_plan/
-        id: mypy
-        name: mypy
-        entry: poetry run mypy
+        id: pyright
+        name: pyright
+        entry: uv run pyright
         language: system
         stages: [commit]
         types: [file, python]

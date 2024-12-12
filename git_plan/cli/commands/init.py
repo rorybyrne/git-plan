@@ -2,6 +2,7 @@
 
 @author Rory Byrne <rory@rory.bio>
 """
+
 from typing import Any
 
 from git_plan.cli.commands.command import Command
@@ -14,7 +15,7 @@ from git_plan.util.decorators import requires_git_repository
 class Init(Command):
     """Initialize git plan in the directory."""
 
-    subcommand = 'init'
+    subcommand = "init"
 
     def __init__(self, repository_service: RepositoryService, **kwargs):
         super().__init__(**kwargs)
@@ -34,4 +35,4 @@ class Init(Command):
             self._ui.bold("Git plan is already initialized.")
 
     def register_subparser(self, subparsers: Any):
-        subparsers.add_parser(Init.subcommand, help='Initialize git plan.')
+        subparsers.add_parser(Init.subcommand, help="Initialize git plan.")

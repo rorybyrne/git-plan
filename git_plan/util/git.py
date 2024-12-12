@@ -2,11 +2,12 @@
 
 Author: Rory Byrne <rory@rory.bio>
 """
+
 from pathlib import Path
 
 from git_plan.exceptions import NotAGitRepository
 
-GIT_DIR = '.git'
+GIT_DIR = ".git"
 
 
 def get_repository_root(directory: Path):
