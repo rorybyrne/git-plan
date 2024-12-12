@@ -1,35 +1,30 @@
-[tool.poetry]
+[project]
 name = "git-plan"
-version = "0.2.4"
-description = "A better personal workflow for git"
-authors = ["Rory Byrne <rory@rory.bio>"]
-license = "MIT"
-repository = "https://github.com/synek/git-plan"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.11"
+dependencies = [
+    "cachetools>=5.5.0",
+    "dependency-injector>=4.44.0",
+    "humanize>=4.11.0",
+    "inquirer>=3.4.0",
+    "rich>=13.9.4",
+]
 
-[tool.poetry.scripts]
+[tool.uv]
+dev-dependencies = [
+    "coverage>=7.6.9",
+    "mypy>=1.13.0",
+    "pre-commit>=4.0.1",
+    "pylint>=3.3.2",
+    "pytest>=8.3.4",
+    "tox>=4.23.2",
+]
+package = true
+
+[project.scripts]
 git-plan = 'git_plan.__cli__:main'
 gp = 'git_plan.__cli__:main'
-
-[tool.poetry.dependencies]
-python = "^3.6.1"
-dependency-injector = {version = "^4.31.1", extras = ["yaml"]}
-cachetools = "^4.2.1"
-rich = "^9.13.0"
-inquirer = "^2.7.0"
-humanize = "^3.3.0"
-dataclasses = { version="^0.8", python="^3.6, <3.7" }
-
-[tool.poetry.dev-dependencies]
-pytest = "^6.2.2"
-coverage = "^5.5"
-pre-commit = "^2.11.1"
-tox = "^3.23.0"
-mypy = "^0.812"
-pylint = "^2.7.2"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
 
 [tool.pylint.MASTER]
 extension-pkg-whitelist = "dependency_injector"
@@ -39,3 +34,6 @@ max-line-length = 120
 
 [tool.isort]
 known_first_party = ['git_plan']
+
+[tool.ruff]
+line-length = 120

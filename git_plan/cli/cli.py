@@ -1,9 +1,10 @@
 """CLI Entrypoint"""
+
 import argparse
 from argparse import Namespace
 from typing import Dict, List
 
-import pkg_resources
+from importlib.metadata import version
 
 from git_plan.cli.commands.command import Command
 from git_plan.exceptions import CommandNotFound
@@ -19,10 +20,10 @@ class CLI:
         self._plan_service = plan_service
         self._repository = repository
 
-        self._parser = argparse.ArgumentParser(prog='git-plan', description='A better workflow for git.')
-        self._parser.add_argument('subcommand', type=str, nargs='?', help='The subcommand to run')
-        self._parser.add_argument('--version', dest='version', action='store_true')
-        subparsers = self._parser.add_subparsers(dest='subcommand')
+        self._parser = argparse.ArgumentParser(prog="git-plan", description="A better workflow for git.")
+        self._parser.add_argument("subcommand", type=str, nargs="?", help="The subcommand to run")
+        self._parser.add_argument("--version", dest="version", action="store_true")
+        subparsers = self._parser.add_subparsers(dest="subcommand")
 
         for command in commands:
             command.register_subparser(subparsers)
@@ -81,8 +82,7 @@ class CLI:
     @staticmethod
     def version():
         """Print the version"""
-        version = pkg_resources.require('git_plan')[0]
-        print(version)
+        print(version("git_plan"))
 
     def help(self):
         """Print the help"""
