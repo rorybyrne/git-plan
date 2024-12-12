@@ -2,22 +2,22 @@
 name = "git-plan"
 version = "0.1.0"
 description = "Add your description here"
-requires-python = ">=3.11"
+requires-python = ">=3.8"
 dependencies = [
     "cachetools>=5.5.0",
     "dependency-injector>=4.44.0",
-    "humanize>=4.11.0",
-    "inquirer>=3.4.0",
+    "humanize>=4.10.0",
+    "inquirer>=3.1.4",
     "rich>=13.9.4",
 ]
 
 [tool.uv]
 dev-dependencies = [
-    "coverage>=7.6.9",
-    "mypy>=1.13.0",
-    "pre-commit>=4.0.1",
-    "pylint>=3.3.2",
+    "coverage>=7.6.1",
+    "pre-commit>=3.5.0",
+    "pyright>=1.1.390",
     "pytest>=8.3.4",
+    "ruff>=0.8.2",
     "tox>=4.23.2",
 ]
 package = true
